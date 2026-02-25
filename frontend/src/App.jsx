@@ -2,11 +2,12 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import { Toaster } from "@/components/ui/toaster";
+import ScrollToTop from "@/components/ui/ScrollToTop";
 
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
-import DoctorsList from "./components/DoctorsList";
+import Doctors from "./pages/Doctors";
 import DoctorProfile from "./pages/DoctorProfile";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
@@ -39,13 +40,14 @@ export default function App() {
   return (
     <BrowserRouter>
       <Navbar />
+      <ScrollToTop />
       <main className="container-fluid p-0">
         <Routes>
           {/* Public */}
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/doctors" element={<DoctorsList />} />
+          <Route path="/doctors" element={<Doctors />} />
           <Route path="/doctors/:id" element={<DoctorProfile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />

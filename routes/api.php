@@ -7,6 +7,7 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EmailVerificationController; // ← add this
 use App\Http\Controllers\PasswordResetController; // ← add this
+use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Route;
 
 // ─── Public routes ────────────────────────────────────────────
@@ -15,6 +16,7 @@ Route::post('/login',    [AuthController::class, 'login']);
 Route::post('/email/resend', [EmailVerificationController::class, 'resend'])->middleware('throttle:6,1'); // ← move here public
 Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword']); // ← add this
 Route::post('/reset-password',  [PasswordResetController::class, 'resetPassword']); // ← add this
+Route::post('/contact', [ContactController::class, 'store']);
 
 // Doctors list (public)
 Route::get('/doctors',                   [DoctorController::class, 'index']);

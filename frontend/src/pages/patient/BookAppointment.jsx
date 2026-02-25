@@ -174,7 +174,7 @@ export default function BookAppointment() {
               <div className="fw-bold">Dr. {doctor.name}</div>
               <div className="text-secondary small d-flex flex-wrap gap-2 mt-1">
                 {profile?.specialty && (
-                  <span className="badge text-bg-primary bg-opacity-10">
+                  <span className="badge text-bg-primary bg-opacity-10 text-primary">
                     {profile.specialty}
                   </span>
                 )}

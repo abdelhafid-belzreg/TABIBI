@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import {
   Stethoscope, DollarSign, Award, Clock,
   Calendar, MapPin, Phone, Building, FileText,
-  ChevronLeft, Star,
+  ChevronLeft,
 } from "lucide-react";
 import api from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
@@ -25,11 +25,12 @@ const dayColors = {
 
 export default function DoctorProfile() {
   const { id }           = useParams();
-  const { user, role }   = useAuth();
-  const [doctor, setDoctor]           = useState(null);
+  const { user }         = useAuth();
+  const role             = user?.role;
+  const [doctor, setDoctor]             = useState(null);
   const [availability, setAvailability] = useState([]);
-  const [loading, setLoading]         = useState(true);
-  const [error, setError]             = useState("");
+  const [loading, setLoading]           = useState(true);
+  const [error, setError]               = useState("");
 
   useEffect(() => {
     const fetchDoctor = async () => {
@@ -63,7 +64,6 @@ export default function DoctorProfile() {
 
   const profile = doctor.doctor_profile;
 
-  // Group availability by day
   const grouped = dayNames.reduce((acc, _, i) => {
     const daySlots = availability.filter((a) => a.day_of_week === i);
     if (daySlots.length > 0) acc[i] = daySlots;
@@ -74,7 +74,7 @@ export default function DoctorProfile() {
     <div className="bg-body py-4">
       <div className="container" style={{ maxWidth: 780 }}>
 
-        {/* ── Back ── */}
+        {/* Back */}
         <Link
           to="/doctors"
           className="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1 mb-3"
@@ -82,7 +82,7 @@ export default function DoctorProfile() {
           <ChevronLeft size={15} /> Back to Doctors
         </Link>
 
-        {/* ── Header Card ── */}
+        {/* Header Card */}
         <div className="card border-0 shadow-sm mb-4">
           <div className="card-body p-4">
             <div className="d-flex flex-column flex-sm-row gap-4 align-items-start">
@@ -112,16 +112,6 @@ export default function DoctorProfile() {
                     <Badge variant="primary" className="mb-2">
                       {profile?.specialty || "General"}
                     </Badge>
-                  </div>
-
-                  {/* Rating placeholder */}
-                  <div className="d-flex align-items-center gap-1 text-warning small">
-                    <Star size={14} fill="currentColor" />
-                    <Star size={14} fill="currentColor" />
-                    <Star size={14} fill="currentColor" />
-                    <Star size={14} fill="currentColor" />
-                    <Star size={14} fill="currentColor" />
-                    <span className="text-secondary ms-1">5.0</span>
                   </div>
                 </div>
 
@@ -158,7 +148,7 @@ export default function DoctorProfile() {
         <div className="row g-4">
           <div className="col-lg-7">
 
-            {/* ── About ── */}
+            {/* About */}
             {profile?.bio && (
               <div className="card border-0 shadow-sm mb-4">
                 <div className="card-header bg-body-secondary py-2 d-flex align-items-center gap-2">
@@ -171,7 +161,7 @@ export default function DoctorProfile() {
               </div>
             )}
 
-            {/* ── Qualifications ── */}
+            {/* Qualifications */}
             {profile?.qualifications && (
               <div className="card border-0 shadow-sm mb-4">
                 <div className="card-header bg-body-secondary py-2 d-flex align-items-center gap-2">
@@ -184,7 +174,7 @@ export default function DoctorProfile() {
               </div>
             )}
 
-            {/* ── Location ── */}
+            {/* Location */}
             {profile?.location && (
               <div className="card border-0 shadow-sm mb-4">
                 <div className="card-header bg-body-secondary py-2 d-flex align-items-center gap-2">
@@ -201,7 +191,7 @@ export default function DoctorProfile() {
 
           <div className="col-lg-5">
 
-            {/* ── Availability ── */}
+            {/* Availability */}
             <div className="card border-0 shadow-sm mb-4">
               <div className="card-header bg-body-secondary py-2 d-flex align-items-center gap-2">
                 <Clock size={14} className="text-secondary" />
@@ -251,7 +241,7 @@ export default function DoctorProfile() {
               </div>
             </div>
 
-            {/* ── Book Button ── */}
+            {/* Book Button */}
             <div className="card border-0 shadow-sm">
               <div className="card-body p-4 text-center">
                 {profile?.consultation_fee && (
@@ -279,9 +269,6 @@ export default function DoctorProfile() {
                   </Link>
                 ) : null}
 
-                <p className="text-secondary small mt-3 mb-0">
-                  Free cancellation up to 2 hours before
-                </p>
               </div>
             </div>
 
