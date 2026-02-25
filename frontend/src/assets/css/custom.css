@@ -1,0 +1,46 @@
+/* ── Navbar Blur ── */
+.blurEffect {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(5px);
+}
+[data-bs-theme="dark"] .blurEffect {
+  background: rgba(30, 30, 30, 0.85) !important;
+  backdrop-filter: blur(10px);
+}
+
+/* ── Hover Utilities ── */
+.light-hover:hover {
+  background-color: rgb(128, 168, 253) !important;
+}
+.hover-light:hover {
+  background-color: #fff !important;
+  color: rgb(13, 110, 253) !important;
+}
+.hover-primary:hover {
+  background-color: rgb(13, 110, 253) !important;
+  color: #fff !important;
+}
+
+/* ── Card Hover ── */
+.card-hover {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}
+[data-bs-theme="dark"] .card-hover:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* ── Card Popout ── */
+.card-popout {
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.card-popout:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+}
+[data-bs-theme="dark"] .card-popout:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+}
