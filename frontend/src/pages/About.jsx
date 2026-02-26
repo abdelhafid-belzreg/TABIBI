@@ -1,24 +1,10 @@
 import { useEffect, useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Heart, Shield, Users, Award, ArrowRight, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import api from "@/lib/api";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const values = [
-  { icon: Heart,  title: "Patient-Centered Care", desc: "Every decision we make revolves around improving the patient experience and health outcomes.",  color: "danger"  },
-  { icon: Shield, title: "Trust & Security",       desc: "Your health data is encrypted and protected with industry-leading security standards.",         color: "primary" },
-  { icon: Users,  title: "Accessibility",          desc: "We believe quality healthcare should be accessible to everyone, everywhere.",                   color: "success" },
-  { icon: Award,  title: "Excellence",             desc: "We partner only with verified, qualified healthcare professionals.",                             color: "warning" },
-];
-
-const missions = [
-  "Seamless & secure appointment booking",
-  "Verified and qualified doctors only",
-  "24/7 access to healthcare services",
-  "Real-time availability & instant confirmation",
-];
-
-// ── Animated counter ──────────────────────────────────────
 function AnimatedNumber({ value }) {
   const [display, setDisplay] = useState(0);
   useEffect(() => {
@@ -35,11 +21,9 @@ function AnimatedNumber({ value }) {
   return <>{display.toLocaleString()}</>;
 }
 
-// ── Scroll-triggered fade-in hook ────────────────────────
 function useFadeIn(threshold = 0.15) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
-
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect(); } },
@@ -48,37 +32,21 @@ function useFadeIn(threshold = 0.15) {
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
   }, [threshold]);
-
   return [ref, visible];
 }
 
-// ── FadeIn wrapper ────────────────────────────────────────
 function FadeIn({ children, delay = 0, direction = "up", className = "" }) {
   const [ref, visible] = useFadeIn();
-
-  const translate = direction === "up"    ? "translateY(40px)"
-                  : direction === "down"  ? "translateY(-40px)"
-                  : direction === "left"  ? "translateX(40px)"
-                  : direction === "right" ? "translateX(-40px)"
-                  : "translateY(40px)";
-
+  const translate = direction === "up" ? "translateY(40px)" : direction === "down" ? "translateY(-40px)" : direction === "left" ? "translateX(40px)" : "translateX(-40px)";
   return (
-    <div
-      ref={ref}
-      className={className}
-      style={{
-        opacity:    visible ? 1 : 0,
-        transform:  visible ? "translate(0)" : translate,
-        transition: `opacity 0.6s ease ${delay}ms, transform 0.6s ease ${delay}ms`,
-      }}
-    >
+    <div ref={ref} className={className} style={{ opacity: visible ? 1 : 0, transform: visible ? "translate(0)" : translate, transition: `opacity 0.6s ease ${delay}ms, transform 0.6s ease ${delay}ms` }}>
       {children}
     </div>
   );
 }
 
-// ── Main ─────────────────────────────────────────────────
 export default function About() {
+  const { t } = useTranslation();
   const [stats,        setStats]        = useState({ total_doctors: 0, total_patients: 0, total_specialties: 0 });
   const [statsLoading, setStatsLoading] = useState(true);
 
@@ -87,17 +55,31 @@ export default function About() {
       try {
         const res = await api.get("/stats");
         setStats(res.data);
-      } catch { /* silently fail */ }
+      } catch { }
       finally { setStatsLoading(false); }
     };
     fetchStats();
   }, []);
 
+  const values = [
+    { icon: Heart,  title: t("about.value1_title"), desc: t("about.value1_desc"), color: "danger"  },
+    { icon: Shield, title: t("about.value2_title"), desc: t("about.value2_desc"), color: "primary" },
+    { icon: Users,  title: t("about.value3_title"), desc: t("about.value3_desc"), color: "success" },
+    { icon: Award,  title: t("about.value4_title"), desc: t("about.value4_desc"), color: "warning" },
+  ];
+
+  const missions = [
+    t("about.mission_1"),
+    t("about.mission_2"),
+    t("about.mission_3"),
+    t("about.mission_4"),
+  ];
+
   const statCards = [
-    { val: stats.total_doctors,     label: "Doctors",     suffix: "+", color: "primary" },
-    { val: stats.total_patients,    label: "Patients",    suffix: "+", color: "success" },
-    { val: stats.total_specialties, label: "Specialties", suffix: "+", color: "info"    },
-    { val: null,                    label: "Support",     text: "24/7", color: "warning" },
+    { val: stats.total_doctors,     label: t("about.doctors"),     suffix: "+", color: "primary" },
+    { val: stats.total_patients,    label: t("about.patients"),    suffix: "+", color: "success" },
+    { val: stats.total_specialties, label: t("about.specialties"), suffix: "+", color: "info"    },
+    { val: null,                    label: t("about.support"),     text: "24/7", color: "warning" },
   ];
 
   return (
@@ -106,38 +88,27 @@ export default function About() {
       {/* Hero */}
       <section className="py-5">
         <div className="container text-center">
-
           <FadeIn delay={0}>
             <span className="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-2 d-inline-flex align-items-center gap-1 mb-3">
-              <Shield size={13} /> About Us
+              <Shield size={13} /> {t("about.badge")}
             </span>
           </FadeIn>
-
           <FadeIn delay={100}>
             <h1 className="display-5 fw-bold mb-3">
-              About <span className="text-primary">TABIBI</span>
+              {t("about.title")} <span className="text-primary">{t("about.title_highlight")}</span>
             </h1>
           </FadeIn>
-
           <FadeIn delay={200}>
-            <p className="lead text-secondary mx-auto mb-4" style={{ maxWidth: 650 }}>
-              TABIBI is a modern online medical appointment platform that bridges
-              the gap between patients and healthcare providers, making quality
-              healthcare accessible with just a few clicks.
-            </p>
+            <p className="lead text-secondary mx-auto mb-4" style={{ maxWidth: 650 }}>{t("about.subtitle")}</p>
           </FadeIn>
-
           <FadeIn delay={300}>
             <div className="d-flex justify-content-center gap-3 flex-wrap">
               <Link to="/doctors" className="btn btn-primary d-inline-flex align-items-center gap-1">
-                Find a Doctor <ArrowRight size={15} />
+                {t("about.find_doctor")} <ArrowRight size={15} />
               </Link>
-              <Link to="/signup" className="btn btn-outline-primary">
-                Join as Doctor
-              </Link>
+              <Link to="/signup" className="btn btn-outline-primary">{t("about.join_doctor")}</Link>
             </div>
           </FadeIn>
-
         </div>
       </section>
 
@@ -146,28 +117,19 @@ export default function About() {
         <div className="container">
           <div className="row align-items-center g-5 mb-5">
 
-            {/* Mission text */}
+            {/* Mission */}
             <div className="col-md-6">
               <FadeIn direction="right">
                 <h2 className="fw-bold mb-3">
-                  Our <span className="text-primary">Mission</span>
+                  {t("about.mission")} <span className="text-primary">{t("about.mission_highlight")}</span>
                 </h2>
-                <p className="text-secondary mb-3">
-                  To revolutionize healthcare access by providing a seamless,
-                  secure, and efficient platform for booking medical appointments.
-                  We strive to connect patients with the right doctors at the right time.
-                </p>
-                <p className="text-secondary mb-4">
-                  Founded with the belief that booking a doctor's appointment
-                  should be as simple as ordering food online, TABIBI has grown
-                  to serve thousands of patients and hundreds of healthcare providers.
-                </p>
+                <p className="text-secondary mb-3">{t("about.mission_p1")}</p>
+                <p className="text-secondary mb-4">{t("about.mission_p2")}</p>
                 <ul className="list-unstyled d-flex flex-column gap-2 mb-0">
                   {missions.map((m, i) => (
                     <FadeIn key={m} delay={i * 100} direction="right">
                       <li className="d-flex align-items-center gap-2 text-secondary small">
-                        <CheckCircle size={16} className="text-success flex-shrink-0" />
-                        {m}
+                        <CheckCircle size={16} className="text-success flex-shrink-0" /> {m}
                       </li>
                     </FadeIn>
                   ))}
@@ -189,10 +151,7 @@ export default function About() {
                           <div className={`h3 fw-bold text-${s.color} mb-1`}>
                             {statsLoading
                               ? <Skeleton width={60} height={28} className="mx-auto" />
-                              : s.text
-                                ? s.text
-                                : <><AnimatedNumber value={s.val} />{s.suffix}</>
-                            }
+                              : s.text ? s.text : <><AnimatedNumber value={s.val} />{s.suffix}</>}
                           </div>
                           <div className="small text-secondary fw-medium">{s.label}</div>
                         </div>
@@ -209,9 +168,9 @@ export default function About() {
           <FadeIn>
             <div className="text-center mb-4">
               <h2 className="fw-bold mb-2">
-                Our <span className="text-primary">Values</span>
+                {t("about.values")} <span className="text-primary">{t("about.values_highlight")}</span>
               </h2>
-              <p className="text-secondary">What drives everything we do at TABIBI</p>
+              <p className="text-secondary">{t("about.values_subtitle")}</p>
             </div>
           </FadeIn>
 
@@ -242,17 +201,13 @@ export default function About() {
           <FadeIn direction="up">
             <div className="card border-0 shadow-sm bg-primary text-white text-center p-5">
               <Shield size={36} className="mx-auto mb-3 opacity-75" />
-              <h2 className="fw-bold mb-3">Join Thousands of Happy Patients</h2>
-              <p className="opacity-75 lead mb-4 mx-auto" style={{ maxWidth: 500 }}>
-                Experience healthcare the modern way — fast, easy, and reliable.
-              </p>
+              <h2 className="fw-bold mb-3">{t("about.cta_title")}</h2>
+              <p className="opacity-75 lead mb-4 mx-auto" style={{ maxWidth: 500 }}>{t("about.cta_subtitle")}</p>
               <div className="d-flex flex-column flex-sm-row justify-content-center gap-3">
                 <Link to="/signup" className="btn btn-light btn-lg fw-semibold d-inline-flex align-items-center gap-2 justify-content-center">
-                  Get Started <ArrowRight size={18} />
+                  {t("about.get_started")} <ArrowRight size={18} />
                 </Link>
-                <Link to="/doctors" className="btn btn-outline-light btn-lg">
-                  Browse Doctors
-                </Link>
+                <Link to="/doctors" className="btn btn-outline-light btn-lg">{t("about.browse_doctors")}</Link>
               </div>
             </div>
           </FadeIn>

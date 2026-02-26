@@ -7,15 +7,10 @@ import {
   LayoutDashboard, Sun, Moon, ChevronDown, ArrowUp,
 } from "lucide-react";
 import { useState, useEffect } from "react";
-
-const navLinks = [
-  { to: "/",        label: "Home"    },
-  { to: "/doctors", label: "Doctors" },
-  { to: "/about",   label: "About"   },
-  { to: "/contact", label: "Contact" },
-];
+import { useTranslation } from "react-i18next";
 
 export default function Navbar() {
+  const { t, i18n } = useTranslation();
   const { user, role, logout } = useAuth();
   const { dark, toggleDark }   = useTheme();
   const navigate               = useNavigate();
@@ -24,7 +19,19 @@ export default function Navbar() {
   const [dropOpen,   setDropOpen]   = useState(false);
   const [showScroll, setShowScroll] = useState(false);
 
-  // ── Show scroll-up button after 300px ──
+  const navLinks = [
+    { to: "/",        label: t("nav.home")    },
+    { to: "/doctors", label: t("nav.doctors") },
+    { to: "/about",   label: t("nav.about")   },
+    { to: "/contact", label: t("nav.contact") },
+  ];
+
+  const languages = [
+    { code: "en", label: "English",  flag: "🇬🇧" },
+    { code: "fr", label: "Français", flag: "🇫🇷" },
+    { code: "ar", label: "العربية",  flag: "🇲🇦" },
+  ];
+
   useEffect(() => {
     const onScroll = () => setShowScroll(window.scrollY > 300);
     window.addEventListener("scroll", onScroll);
@@ -39,6 +46,12 @@ export default function Navbar() {
     setMobileOpen(false);
   };
 
+  const changeLanguage = (lang) => {
+    i18n.changeLanguage(lang);
+    document.documentElement.dir  = lang === "ar" ? "rtl" : "ltr";
+    document.documentElement.lang = lang;
+  };
+
   const dashboardPath =
     role === "doctor" ? "/doctor/dashboard"  :
     role === "admin"  ? "/admin/dashboard"   :
@@ -47,39 +60,29 @@ export default function Navbar() {
   const isActive = (path) =>
     path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
 
+  const currentLang = languages.find((l) => l.code === i18n.language) ?? languages[0];
+
   return (
     <>
-      {/* ══════════════ NAVBAR ══════════════ */}
       <nav className="blurEffect navbar navbar-expand-lg sticky-top border-bottom">
         <div className="container">
 
-          {/* ── Brand ── */}
-          <Link
-            to="/"
-            className="navbar-brand d-flex align-items-center gap-2 fw-bold text-primary"
-          >
+          {/* Brand */}
+          <Link to="/" className="navbar-brand d-flex align-items-center gap-2 fw-bold text-primary">
             <Stethoscope size={22} />
             <span>TABIBI</span>
           </Link>
 
-          {/* ── Mobile: dark toggle + hamburger ── */}
+          {/* Mobile controls */}
           <div className="d-flex align-items-center gap-2 ms-auto d-lg-none">
-            <button
-              className="btn btn-sm btn-outline-secondary d-flex align-items-center"
-              onClick={toggleDark}
-              title={dark ? "Light Mode" : "Dark Mode"}
-            >
+            <button className="btn btn-sm btn-outline-secondary d-flex align-items-center" onClick={toggleDark}>
               {dark ? <Sun size={15} /> : <Moon size={15} />}
             </button>
-            <button
-              className="btn btn-sm btn-outline-primary d-flex align-items-center"
-              onClick={() => setMobileOpen(!mobileOpen)}
-            >
+            <button className="btn btn-sm btn-outline-primary d-flex align-items-center" onClick={() => setMobileOpen(!mobileOpen)}>
               {mobileOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
           </div>
 
-          {/* ── Nav Links + Auth ── */}
           <div className={`collapse navbar-collapse${mobileOpen ? " show" : ""}`}>
 
             {/* Nav links */}
@@ -89,110 +92,86 @@ export default function Navbar() {
                   <Link
                     to={link.to}
                     onClick={() => setMobileOpen(false)}
-                    className={`nav-link px-3 rounded ${
-                      isActive(link.to)
-                        ? "text-primary fw-semibold"
-                        : "text-secondary"
-                    }`}
+                    className={`nav-link px-3 rounded ${isActive(link.to) ? "text-primary fw-semibold" : "text-secondary"}`}
                   >
                     {link.label}
-                    {/* active dot */}
                     {isActive(link.to) && (
-                      <span
-                        className="d-none d-lg-inline-block bg-primary rounded-circle ms-1"
-                        style={{ width: 5, height: 5, verticalAlign: "middle" }}
-                      />
+                      <span className="d-none d-lg-inline-block bg-primary rounded-circle ms-1" style={{ width: 5, height: 5, verticalAlign: "middle" }} />
                     )}
                   </Link>
                 </li>
               ))}
             </ul>
 
-            {/* Auth + Theme */}
+            {/* Right side */}
             <div className="d-flex align-items-center gap-2 mt-2 mt-lg-0 justify-content-center">
 
-              {/* Dark toggle — desktop */}
-              <button
-                className="btn btn-sm btn-outline-secondary d-none d-lg-flex align-items-center"
-                onClick={toggleDark}
-                title={dark ? "Light Mode" : "Dark Mode"}
-              >
+              {/* Dark toggle desktop */}
+              <button className="btn btn-sm btn-outline-secondary d-none d-lg-flex align-items-center" onClick={toggleDark}>
                 {dark ? <Sun size={15} /> : <Moon size={15} />}
               </button>
 
+              {/* Language switcher */}
+              <div className="dropdown">
+                <button
+                  className="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center gap-1"
+                  data-bs-toggle="dropdown"
+                >
+                  {currentLang.flag} {currentLang.label}
+                </button>
+                <ul className="dropdown-menu dropdown-menu-end">
+                  {languages.map((lang) => (
+                    <li key={lang.code}>
+                      <button
+                        className={`dropdown-item d-flex align-items-center gap-2 ${i18n.language === lang.code ? "active" : ""}`}
+                        onClick={() => changeLanguage(lang.code)}
+                      >
+                        {lang.flag} {lang.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
               {user ? (
                 <div className="position-relative">
-                  {/* User dropdown trigger */}
                   <button
                     className="btn btn-sm btn-outline-primary d-flex align-items-center gap-1"
                     onClick={() => setDropOpen(!dropOpen)}
                   >
-                    <span
-                      className="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center"
-                      style={{ width: 22, height: 22, fontSize: "0.7rem", fontWeight: 700 }}
-                    >
+                    <span className="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center" style={{ width: 22, height: 22, fontSize: "0.7rem", fontWeight: 700 }}>
                       {user.name?.charAt(0).toUpperCase()}
                     </span>
                     <span className="d-none d-lg-inline">{user.name?.split(" ")[0]}</span>
                     <ChevronDown size={13} />
                   </button>
 
-                  {/* Dropdown */}
                   {dropOpen && (
-                    <div
-                      className="position-absolute end-0 mt-1 bg-body border rounded shadow-sm py-1"
-                      style={{ minWidth: 185, zIndex: 9999 }}
-                      onMouseLeave={() => setDropOpen(false)}
-                    >
-                      {/* User info */}
+                    <div className="position-absolute end-0 mt-1 bg-body border rounded shadow-sm py-1" style={{ minWidth: 185, zIndex: 9999 }} onMouseLeave={() => setDropOpen(false)}>
                       <div className="px-3 py-2 border-bottom">
                         <div className="fw-semibold small">{user.name}</div>
                         <div className="text-secondary" style={{ fontSize: "0.75rem" }}>{user.email}</div>
-                        <span
-                          className={`badge mt-1 text-bg-${
-                            role === "admin" ? "danger" : role === "doctor" ? "success" : "primary"
-                          }`}
-                          style={{ fontSize: "0.65rem" }}
-                        >
+                        <span className={`badge mt-1 text-bg-${role === "admin" ? "danger" : role === "doctor" ? "success" : "primary"}`} style={{ fontSize: "0.65rem" }}>
                           {role}
                         </span>
                       </div>
-
-                      {/* Dashboard */}
-                      <button
-                        className="dropdown-item d-flex align-items-center gap-2 small py-2"
-                        onClick={() => { navigate(dashboardPath); setDropOpen(false); setMobileOpen(false); }}
-                      >
-                        <LayoutDashboard size={14} /> Dashboard
+                      <button className="dropdown-item d-flex align-items-center gap-2 small py-2" onClick={() => { navigate(dashboardPath); setDropOpen(false); setMobileOpen(false); }}>
+                        <LayoutDashboard size={14} /> {t("nav.dashboard")}
                       </button>
-
                       <hr className="dropdown-divider my-1" />
-
-                      {/* Sign out */}
-                      <button
-                        className="dropdown-item d-flex align-items-center gap-2 small py-2 text-danger"
-                        onClick={handleSignOut}
-                      >
-                        <LogOut size={14} /> Sign Out
+                      <button className="dropdown-item d-flex align-items-center gap-2 small py-2 text-danger" onClick={handleSignOut}>
+                        <LogOut size={14} /> {t("nav.sign_out")}
                       </button>
                     </div>
                   )}
                 </div>
               ) : (
                 <>
-                  <Link
-                    to="/login"
-                    onClick={() => setMobileOpen(false)}
-                    className="btn btn-sm btn-outline-primary"
-                  >
-                    Sign In
+                  <Link to="/login" onClick={() => setMobileOpen(false)} className="btn btn-sm btn-outline-primary">
+                    {t("nav.sign_in")}
                   </Link>
-                  <Link
-                    to="/signup"
-                    onClick={() => setMobileOpen(false)}
-                    className="btn btn-sm btn-primary"
-                  >
-                    Sign Up
+                  <Link to="/signup" onClick={() => setMobileOpen(false)} className="btn btn-sm btn-primary">
+                    {t("nav.sign_up")}
                   </Link>
                 </>
               )}
@@ -201,23 +180,11 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* ══════════════ SCROLL TO TOP ══════════════ */}
+      {/* Scroll to top */}
       <button
         onClick={scrollToTop}
-        title="Scroll to top"
         className="btn btn-primary d-flex align-items-center justify-content-center shadow"
-        style={{
-          position:     "fixed",
-          bottom:       "1.5rem",
-          right:        "1.5rem",
-          width:        42,
-          height:       42,
-          borderRadius: "50%",
-          zIndex:       9999,
-          opacity:      showScroll ? 1 : 0,
-          pointerEvents: showScroll ? "auto" : "none",
-          transition:   "opacity 0.3s ease",
-        }}
+        style={{ position: "fixed", bottom: "1.5rem", right: "1.5rem", width: 42, height: 42, borderRadius: "50%", zIndex: 9999, opacity: showScroll ? 1 : 0, pointerEvents: showScroll ? "auto" : "none", transition: "opacity 0.3s ease" }}
       >
         <ArrowUp size={18} />
       </button>

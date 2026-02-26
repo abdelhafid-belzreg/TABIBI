@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Stethoscope, DollarSign, Award, Clock,
   Calendar, MapPin, Phone, Building, FileText,
@@ -10,8 +11,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Spinner }    from "@/components/ui/spinner";
 import { Badge }      from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
-
-const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 const dayColors = {
   0: "danger",
@@ -24,6 +23,7 @@ const dayColors = {
 };
 
 export default function DoctorProfile() {
+  const { t } = useTranslation();
   const { id }           = useParams();
   const { user }         = useAuth();
   const role             = user?.role;
@@ -31,6 +31,17 @@ export default function DoctorProfile() {
   const [availability, setAvailability] = useState([]);
   const [loading, setLoading]           = useState(true);
   const [error, setError]               = useState("");
+
+  // Translate day names for availability
+  const dayNamesT = [
+    t("doctors.days.sunday", "Sunday"),
+    t("doctors.days.monday", "Monday"),
+    t("doctors.days.tuesday", "Tuesday"),
+    t("doctors.days.wednesday", "Wednesday"),
+    t("doctors.days.thursday", "Thursday"),
+    t("doctors.days.friday", "Friday"),
+    t("doctors.days.saturday", "Saturday"),
+  ];
 
   useEffect(() => {
     const fetchDoctor = async () => {
@@ -42,29 +53,29 @@ export default function DoctorProfile() {
         setDoctor(doctorRes.data);
         setAvailability(availabilityRes.data);
       } catch {
-        setError("Doctor not found or failed to load.");
+        setError(t("doctor_profile.not_found"));
       } finally {
         setLoading(false);
       }
     };
     fetchDoctor();
-  }, [id]);
+  }, [id, t]);
 
-  if (loading) return <Spinner text="Loading doctor profile..." />;
+  if (loading) return <Spinner text={t("doctor_profile.loading")} />;
 
   if (error || !doctor) {
     return (
       <EmptyState
         icon={Stethoscope}
-        title="Doctor Not Found"
-        desc={error || "This doctor profile does not exist."}
+        title={t("doctor_profile.not_found")}
+        desc={error || t("doctor_profile.not_exist")}
       />
     );
   }
 
   const profile = doctor.doctor_profile;
 
-  const grouped = dayNames.reduce((acc, _, i) => {
+  const grouped = dayNamesT.reduce((acc, _, i) => {
     const daySlots = availability.filter((a) => a.day_of_week === i);
     if (daySlots.length > 0) acc[i] = daySlots;
     return acc;
@@ -79,7 +90,7 @@ export default function DoctorProfile() {
           to="/doctors"
           className="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1 mb-3"
         >
-          <ChevronLeft size={15} /> Back to Doctors
+          <ChevronLeft size={15} /> {t("doctor_profile.back")}
         </Link>
 
         {/* Header Card */}
@@ -108,9 +119,9 @@ export default function DoctorProfile() {
               <div className="flex-fill">
                 <div className="d-flex align-items-start justify-content-between flex-wrap gap-2">
                   <div>
-                    <h1 className="h4 fw-bold mb-1">Dr. {doctor.name}</h1>
+                    <h1 className="h4 fw-bold mb-1">{t("doctors.dr")} {doctor.name}</h1>
                     <Badge variant="primary" className="mb-2">
-                      {profile?.specialty || "General"}
+                      {profile?.specialty || t("doctors.general")}
                     </Badge>
                   </div>
                 </div>
@@ -121,7 +132,7 @@ export default function DoctorProfile() {
                     <span className="d-flex align-items-center gap-1">
                       <DollarSign size={14} className="text-success" />
                       <span className="text-success fw-medium">{profile.consultation_fee} MAD</span>
-                      <span>/ visit</span>
+                      <span>{t("doctor_profile.per_visit")}</span>
                     </span>
                   )}
                   {doctor.phone && (
@@ -153,7 +164,7 @@ export default function DoctorProfile() {
               <div className="card border-0 shadow-sm mb-4">
                 <div className="card-header bg-body-secondary py-2 d-flex align-items-center gap-2">
                   <FileText size={14} className="text-secondary" />
-                  <strong className="small text-uppercase text-secondary">About</strong>
+                  <strong className="small text-uppercase text-secondary">{t("doctor_profile.about")}</strong>
                 </div>
                 <div className="card-body">
                   <p className="text-secondary mb-0">{profile.bio}</p>
@@ -166,7 +177,7 @@ export default function DoctorProfile() {
               <div className="card border-0 shadow-sm mb-4">
                 <div className="card-header bg-body-secondary py-2 d-flex align-items-center gap-2">
                   <Award size={14} className="text-secondary" />
-                  <strong className="small text-uppercase text-secondary">Qualifications</strong>
+                  <strong className="small text-uppercase text-secondary">{t("doctor_profile.qualifications")}</strong>
                 </div>
                 <div className="card-body">
                   <p className="text-secondary mb-0">{profile.qualifications}</p>
@@ -179,7 +190,7 @@ export default function DoctorProfile() {
               <div className="card border-0 shadow-sm mb-4">
                 <div className="card-header bg-body-secondary py-2 d-flex align-items-center gap-2">
                   <MapPin size={14} className="text-secondary" />
-                  <strong className="small text-uppercase text-secondary">Location</strong>
+                  <strong className="small text-uppercase text-secondary">{t("doctor_profile.location")}</strong>
                 </div>
                 <div className="card-body">
                   <p className="text-secondary mb-0">{profile.location}</p>
@@ -195,7 +206,7 @@ export default function DoctorProfile() {
             <div className="card border-0 shadow-sm mb-4">
               <div className="card-header bg-body-secondary py-2 d-flex align-items-center gap-2">
                 <Clock size={14} className="text-secondary" />
-                <strong className="small text-uppercase text-secondary">Availability</strong>
+                <strong className="small text-uppercase text-secondary">{t("doctor_profile.availability")}</strong>
                 {availability.length > 0 && (
                   <Badge variant="primary" className="ms-auto">
                     {availability.length} slot{availability.length > 1 ? "s" : ""}
@@ -218,7 +229,7 @@ export default function DoctorProfile() {
                       >
                         <div className="d-flex align-items-center gap-2 mb-2">
                           <span className={`badge text-bg-${dayColors[dayIndex] ?? "secondary"}`}>
-                            {dayNames[dayIndex]}
+                            {dayNamesT[dayIndex]}
                           </span>
                         </div>
                         <div className="d-flex flex-wrap gap-2">
@@ -246,7 +257,7 @@ export default function DoctorProfile() {
               <div className="card-body p-4 text-center">
                 {profile?.consultation_fee && (
                   <div className="mb-3">
-                    <div className="text-secondary small mb-1">Consultation Fee</div>
+                    <div className="text-secondary small mb-1">{t("doctor_profile.consultation_fee")}</div>
                     <div className="h3 fw-bold text-success mb-0">
                       {profile.consultation_fee} MAD
                     </div>
@@ -258,14 +269,14 @@ export default function DoctorProfile() {
                     to={`/patient/book/${doctor.id}`}
                     className="btn btn-primary btn-lg w-100 d-flex align-items-center justify-content-center gap-2"
                   >
-                    <Calendar size={18} /> Book Appointment
+                    <Calendar size={18} /> {t("doctor_profile.book_appointment")}
                   </Link>
                 ) : !user ? (
                   <Link
                     to="/login"
                     className="btn btn-primary btn-lg w-100 d-flex align-items-center justify-content-center gap-2"
                   >
-                    <Calendar size={18} /> Sign In to Book
+                    <Calendar size={18} /> {t("doctor_profile.sign_in_to_book")}
                   </Link>
                 ) : null}
 
