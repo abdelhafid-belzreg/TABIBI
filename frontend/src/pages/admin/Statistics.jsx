@@ -1,6 +1,28 @@
 import { useEffect, useState } from "react";
 import { Users, UserCheck, Calendar, Stethoscope } from "lucide-react";
 import api from "@/lib/api";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+} from "chart.js";
+import { Bar, Doughnut } from "react-chartjs-2";
+
+ChartJS.register(
+  CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement
+);
+
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 16 } } },
+  scales: { x: { grid: { display: false } }, y: { beginAtZero: true, ticks: { stepSize: 1 } } },
+};
 
 export default function Statistics() {
   const [stats, setStats] = useState(null);
@@ -30,6 +52,27 @@ export default function Statistics() {
     { label: "Specialties", value: stats?.total_specialties ?? 0, icon: Stethoscope, color: "text-secondary", bg: "bg-secondary" },
   ];
 
+  const userRoleData = {
+    labels: ["Doctors", "Patients", "Pending Doctors"],
+    datasets: [{
+      data: stats ? [stats.total_doctors, stats.total_patients, stats.pending_doctors] : [],
+      backgroundColor: ["#4361ee", "#06d6a0", "#ffd166"],
+      borderWidth: 0,
+    }],
+  };
+
+  const statusData = {
+    labels: stats?.appointments_by_status
+      ? Object.keys(stats.appointments_by_status).map((k) => k.charAt(0).toUpperCase() + k.slice(1))
+      : [],
+    datasets: [{
+      data: stats ? Object.values(stats.appointments_by_status) : [],
+      backgroundColor: ["#ffd166", "#06d6a0", "#4361ee", "#ef476f"],
+      borderWidth: 0,
+      borderRadius: 4,
+    }],
+  };
+
   return (
     <div>
       <h1 className="fw-bold mb-4">Statistics</h1>
@@ -43,6 +86,7 @@ export default function Statistics() {
         </div>
       ) : (
         <>
+          {/* Stat Cards */}
           <div className="row g-3 mb-4">
             {statCards.map((s) => (
               <div className="col-12 col-sm-6 col-lg-4" key={s.label}>
@@ -61,24 +105,35 @@ export default function Statistics() {
             ))}
           </div>
 
-          {/* Appointments by status */}
-          {stats?.appointments_by_status && (
-            <div className="card">
-              <div className="card-body">
-                <h5 className="fw-semibold mb-3">Appointments by Status</h5>
-                <div className="row g-3">
-                  {Object.entries(stats.appointments_by_status).map(([status, count]) => (
-                    <div className="col-6 col-md-3" key={status}>
-                      <div className="text-center p-3 rounded bg-body-secondary">
-                        <div className="fw-bold fs-4">{count}</div>
-                        <div className="small text-secondary text-capitalize">{status}</div>
-                      </div>
-                    </div>
-                  ))}
+          {/* Charts */}
+          <div className="row g-3">
+            {/* User Roles Doughnut */}
+            <div className="col-12 col-lg-6">
+              <div className="card card-popout h-100">
+                <div className="card-header bg-body-secondary py-2">
+                  <strong className="small text-uppercase text-secondary">Users by Role</strong>
+                </div>
+                <div className="card-body d-flex align-items-center justify-content-center" style={{ height: 300 }}>
+                  <Doughnut
+                    data={userRoleData}
+                    options={{ responsive: true, maintainAspectRatio: false, cutout: "55%", plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 16 } } } }}
+                  />
                 </div>
               </div>
             </div>
-          )}
+
+            {/* Appointment Status Bar */}
+            <div className="col-12 col-lg-6">
+              <div className="card card-popout h-100">
+                <div className="card-header bg-body-secondary py-2">
+                  <strong className="small text-uppercase text-secondary">Appointments by Status</strong>
+                </div>
+                <div className="card-body" style={{ height: 300 }}>
+                  <Bar data={statusData} options={chartOptions} />
+                </div>
+              </div>
+            </div>
+          </div>
         </>
       )}
     </div>

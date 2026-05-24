@@ -122,4 +122,77 @@ class AdminController extends Controller
 
         return response()->json($appointments);
     }
+
+    // ─── Reports Data ─────────────────────────────────────────
+
+    public function getReportsData(Request $request)
+    {
+        $appointments = Appointment::with(['doctor:id,name', 'patient:id,name'])->get();
+
+        // Appointments by status
+        $byStatus = [
+            'pending'   => $appointments->where('status', 'pending')->count(),
+            'accepted'  => $appointments->where('status', 'accepted')->count(),
+            'completed' => $appointments->where('status', 'completed')->count(),
+            'cancelled' => $appointments->where('status', 'cancelled')->count(),
+        ];
+
+        // Appointments per doctor
+        $byDoctor = [];
+        foreach ($appointments->groupBy('doctor_id') as $doctorId => $group) {
+            $doctor = $group->first()->doctor;
+            if ($doctor) {
+                $byDoctor[] = [
+                    'name'  => 'Dr. ' . $doctor->name,
+                    'count' => $group->count(),
+                ];
+            }
+        }
+        rsort($byDoctor);
+
+        // Appointments per day of week
+        $dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        $byDay = array_fill(0, 7, 0);
+        foreach ($appointments as $a) {
+            $dayIndex = (new \DateTime($a->appointment_date))->format('w');
+            $byDay[(int)$dayIndex]++;
+        }
+        $byDay = array_combine($dayNames, $byDay);
+
+        // Appointments in last 7 days
+        $last7Days = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i)->format('Y-m-d');
+            $last7Days[] = [
+                'date'  => now()->subDays($i)->format('D d'),
+                'count' => $appointments->where('appointment_date', $date)->count(),
+            ];
+        }
+
+        // Revenue (completed * consultation_fee approximation)
+        $totalRevenue = 0;
+        $completed = $appointments->where('status', 'completed');
+        foreach ($completed as $appt) {
+            $doctorProfile = $appt->doctor?->doctorProfile;
+            if ($doctorProfile && $doctorProfile->consultation_fee) {
+                $totalRevenue += $doctorProfile->consultation_fee;
+            }
+        }
+
+        // Completion rate
+        $total = $appointments->count();
+        $completedCount = $byStatus['completed'];
+        $cancelledCount = $byStatus['cancelled'];
+
+        return response()->json([
+            'total_appointments'     => $total,
+            'appointments_by_status' => $byStatus,
+            'appointments_by_doctor' => $byDoctor,
+            'appointments_by_day'    => $byDay,
+            'last_7_days'            => $last7Days,
+            'total_revenue'          => $totalRevenue,
+            'completion_rate'        => $total > 0 ? round(($completedCount / $total) * 100, 1) : 0,
+            'cancellation_rate'      => $total > 0 ? round(($cancelledCount / $total) * 100, 1) : 0,
+        ]);
+    }
 }

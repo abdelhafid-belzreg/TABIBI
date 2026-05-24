@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import {
   Search, Stethoscope, DollarSign, MapPin,
   Filter, X, Clock, Building,
@@ -56,7 +55,6 @@ function FadeIn({ children, delay = 0, direction = "up", className = "" }) {
 }
 
 export default function Doctors() {
-  const { t, i18n } = useTranslation();
   const [doctors,           setDoctors]           = useState([]);
   const [specialties,       setSpecialties]       = useState([]);
   const [cities,            setCities]            = useState([]);
@@ -67,17 +65,6 @@ export default function Doctors() {
   const [showSidebar,       setShowSidebar]       = useState(false);
   const [loading,           setLoading]           = useState(true);
   const [error,             setError]             = useState("");
-
-  // Translate day names for availability
-  const dayNamesT = [
-    t("doctors.days.sunday", "Sunday"),
-    t("doctors.days.monday", "Monday"),
-    t("doctors.days.tuesday", "Tuesday"),
-    t("doctors.days.wednesday", "Wednesday"),
-    t("doctors.days.thursday", "Thursday"),
-    t("doctors.days.friday", "Friday"),
-    t("doctors.days.saturday", "Saturday"),
-  ];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -93,13 +80,13 @@ export default function Doctors() {
         ].sort();
         setCities(uniqueCities);
       } catch {
-        setError(t("common.error"));
+        setError("Something went wrong. Please try again.");
       } finally {
         setLoading(false);
       }
     };
     fetchData();
-  }, [t]);
+  }, []);
 
   const resetFilters = () => {
     setSelectedSpecialty("all");
@@ -130,9 +117,9 @@ export default function Doctors() {
       {/* Header */}
       <div className="d-flex align-items-center justify-content-between">
         <h6 className="fw-bold mb-0 d-flex align-items-center gap-2">
-          <Filter size={15} /> {t("common.filters")}
+          <Filter size={15} /> Filters
           {hasActiveFilters && (
-            <span className="badge text-bg-primary" style={{ fontSize: "0.65rem" }}>{t("common.active")}</span>
+            <span className="badge text-bg-primary" style={{ fontSize: "0.65rem" }}>Active</span>
           )}
         </h6>
         {hasActiveFilters && (
@@ -140,7 +127,7 @@ export default function Doctors() {
             className="btn btn-sm btn-outline-danger d-flex align-items-center gap-1"
             onClick={resetFilters}
           >
-            <X size={13} /> {t("common.reset")}
+            <X size={13} /> Reset
           </button>
         )}
       </div>
@@ -148,14 +135,14 @@ export default function Doctors() {
       {/* Specialty */}
       <div>
         <label className="form-label fw-semibold small text-uppercase text-secondary mb-1">
-          {t("doctors.specialty")}
+          Specialty
         </label>
         <select
           className="form-select form-select-sm"
           value={selectedSpecialty}
           onChange={(e) => setSelectedSpecialty(e.target.value)}
         >
-          <option value="all">{t("doctors.all_specialties")}</option>
+          <option value="all">All Specialties</option>
           {specialties.map((s) => (
             <option key={s.id} value={s.name}>{s.name}</option>
           ))}
@@ -165,14 +152,14 @@ export default function Doctors() {
       {/* City */}
       <div>
         <label className="form-label fw-semibold small text-uppercase text-secondary mb-1">
-          {t("doctors.city")}
+          City
         </label>
         <select
           className="form-select form-select-sm"
           value={selectedCity}
           onChange={(e) => setSelectedCity(e.target.value)}
         >
-          <option value="all">{t("doctors.all_cities")}</option>
+          <option value="all">All Cities</option>
           {cities.map((city) => (
             <option key={city} value={city}>{city}</option>
           ))}
@@ -182,7 +169,7 @@ export default function Doctors() {
       {/* Available Day */}
       <div>
         <label className="form-label fw-semibold small text-uppercase text-secondary mb-1">
-          {t("doctors.available_on")}
+          Available On
         </label>
         <div className="d-flex flex-column gap-1">
           <div className="form-check">
@@ -192,9 +179,9 @@ export default function Doctors() {
               checked={selectedDay === "all"}
               onChange={(e) => setSelectedDay(e.target.value)}
             />
-            <label className="form-check-label small" htmlFor="day-all">{t("doctors.any_day")}</label>
+            <label className="form-check-label small" htmlFor="day-all">Any Day</label>
           </div>
-          {dayNamesT.map((day, index) => (
+          {dayNames.map((day, index) => (
             <div className="form-check" key={index}>
               <input
                 className="form-check-input" type="radio" name="day"
@@ -217,8 +204,8 @@ export default function Doctors() {
       <section className="py-5 bg-body-secondary border-bottom">
         <div className="container">
           <FadeIn delay={0}>
-            <h1 className="h3 fw-bold mb-1">{t("doctors.title")}</h1>
-            <p className="text-secondary mb-4 small">{t("doctors.subtitle")}</p>
+            <h1 className="h3 fw-bold mb-1">Find a Doctor</h1>
+            <p className="text-secondary mb-4 small">Browse our qualified healthcare professionals</p>
           </FadeIn>
           <FadeIn delay={100}>
             <div className="row g-2">
@@ -229,7 +216,7 @@ export default function Doctors() {
                   </span>
                   <input
                     className="form-control border-start-0 ps-0"
-                    placeholder={t("doctors.search_placeholder")}
+                    placeholder="Search by name or specialty..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                   />
@@ -249,8 +236,8 @@ export default function Doctors() {
                   onClick={() => setShowSidebar(!showSidebar)}
                 >
                   <Filter size={15} />
-                  {showSidebar ? t("doctors.hide_filters") : t("doctors.show_filters")}
-                  {hasActiveFilters && <span className="badge text-bg-primary">{t("common.active")}</span>}
+                  {showSidebar ? "Hide Filters" : "Show Filters"}
+                  {hasActiveFilters && <span className="badge text-bg-primary">Active</span>}
                 </button>
               </div>
             </div>
@@ -289,10 +276,10 @@ export default function Doctors() {
               <FadeIn delay={150}>
                 <div className="d-flex align-items-center justify-content-between mb-3">
                   <p className="text-secondary small mb-0">
-                    {t("doctors.showing")} <strong>{filtered.length}</strong> {t("doctors.doctor", { count: filtered.length })}
+                    Showing <strong>{filtered.length}</strong> {filtered.length === 1 ? "doctor" : "doctors"}
                     {hasActiveFilters && (
                       <button className="btn btn-link btn-sm text-danger p-0 ms-2" onClick={resetFilters}>
-                        {t("doctors.clear_filters")}
+                        Clear filters
                       </button>
                     )}
                   </p>
@@ -300,13 +287,13 @@ export default function Doctors() {
               </FadeIn>
 
               {loading ? (
-                <Spinner text={t("common.loading")} />
+                <Spinner text="Loading doctors..." />
               ) : filtered.length === 0 ? (
                 <FadeIn>
                   <EmptyState
                     icon={Stethoscope}
-                    title={t("doctors.no_doctors")}
-                    desc={t("doctors.no_doctors_desc")}
+                    title="No Doctors Found"
+                    desc="Try adjusting your filters or search term."
                   />
                 </FadeIn>
               ) : (
@@ -338,10 +325,10 @@ export default function Doctors() {
                                 </div>
                                 <div className="flex-grow-1 overflow-hidden">
                                   <h6 className="mb-1 fw-bold text-body text-truncate">
-                                    {t("doctors.dr")} {doc.name}
+                                    Dr. {doc.name}
                                   </h6>
                                   <span className="badge text-bg-primary" style={{ fontSize: "0.7rem" }}>
-                                    {profile?.specialty || t("doctors.general")}
+                                    {profile?.specialty || "General"}
                                   </span>
                                 </div>
                               </div>
@@ -356,7 +343,7 @@ export default function Doctors() {
                                   overflow: "hidden",
                                 }}
                               >
-                                {profile?.bio || t("doctors.no_bio")}
+                                {profile?.bio || "No bio available"}
                               </p>
 
                               {/* Meta */}
@@ -396,7 +383,7 @@ export default function Doctors() {
                                   {profile?.consultation_fee ?? "N/A"} MAD
                                 </span>
                                 <Link to={`/doctors/${doc.id}`} className="btn btn-outline-primary btn-sm">
-                                  {t("doctors.view_profile")}
+                                  View Profile
                                 </Link>
                               </div>
 

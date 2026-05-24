@@ -33,8 +33,6 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import UserManagement from "./pages/admin/UserManagement";
 import DoctorValidation from "./pages/admin/DoctorValidation";
 import SpecialtyManagement from "./pages/admin/SpecialtyManagement";
-import Statistics from "./pages/admin/Statistics";
-import Reports from "./pages/admin/Reports";
 
 export default function App() {
   return (
@@ -78,8 +76,6 @@ export default function App() {
             <Route path="users" element={<UserManagement />} />
             <Route path="doctors/validation" element={<DoctorValidation />} />
             <Route path="specialties" element={<SpecialtyManagement />} />
-            <Route path="statistics" element={<Statistics />} />
-            <Route path="reports" element={<Reports />} />
           </Route>
         </Routes>
       </main>

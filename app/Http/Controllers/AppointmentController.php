@@ -18,6 +18,19 @@ class AppointmentController extends Controller
             'notes'            => 'nullable|string',
         ]);
 
+        // Prevent double-booking: check if slot is already taken (pending or accepted)
+        $existing = Appointment::where('doctor_id', $request->doctor_id)
+            ->where('appointment_date', $request->appointment_date)
+            ->where('appointment_time', $request->appointment_time)
+            ->whereIn('status', ['pending', 'accepted'])
+            ->first();
+
+        if ($existing) {
+            return response()->json([
+                'message' => 'This time slot is already booked. Please choose another time.',
+            ], 422);
+        }
+
         $appointment = Appointment::create([
             'doctor_id'        => $request->doctor_id,
             'patient_id'       => $request->user()->id,
@@ -83,5 +96,21 @@ class AppointmentController extends Controller
         $appointment->update(['status' => 'cancelled']);
 
         return response()->json(['message' => 'Appointment cancelled.']);
+    }
+
+    // Get booked time slots for a doctor on a specific date (public)
+    public function getBookedSlots(Request $request, $doctorId)
+    {
+        $request->validate([
+            'date' => 'required|date',
+        ]);
+
+        $booked = Appointment::where('doctor_id', $doctorId)
+            ->where('appointment_date', $request->date)
+            ->whereIn('status', ['pending', 'accepted'])
+            ->pluck('appointment_time')
+            ->toArray();
+
+        return response()->json($booked);
     }
 }

@@ -2,7 +2,7 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   LayoutDashboard, Users, UserCheck, Stethoscope,
-  BarChart2, FileText, LogOut, Menu, X
+  LogOut, Menu, X
 } from "lucide-react";
 import { useState } from "react";
 
@@ -11,8 +11,6 @@ const navItems = [
   { to: "/admin/users",              icon: Users,           label: "User Management" },
   { to: "/admin/doctors/validation", icon: UserCheck,       label: "Doctor Validation" },
   { to: "/admin/specialties",        icon: Stethoscope,     label: "Specialties" },
-  { to: "/admin/statistics",         icon: BarChart2,       label: "Statistics" },
-  { to: "/admin/reports",            icon: FileText,        label: "Reports" },
 ];
 
 export default function AdminLayout() {

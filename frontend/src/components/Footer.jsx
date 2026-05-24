@@ -1,21 +1,18 @@
 import { Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import { Stethoscope, Mail, Phone, MapPin, Heart, ArrowRight } from "lucide-react";
 
 export default function Footer() {
-  const { t } = useTranslation();
-
   const quickLinks = [
-    { to: "/",        label: t("footer.home")        },
-    { to: "/doctors", label: t("footer.find_doctors") },
-    { to: "/about",   label: t("footer.about")        },
-    { to: "/contact", label: t("footer.contact")      },
+    { to: "/",        label: "Home"         },
+    { to: "/doctors", label: "Find Doctors"  },
+    { to: "/about",   label: "About Us"      },
+    { to: "/contact", label: "Contact"       },
   ];
 
   const patientLinks = [
-    { to: "/signup",  label: t("footer.create_account") },
-    { to: "/doctors", label: t("footer.search_doctors")  },
-    { to: "/login",   label: t("footer.sign_in")         },
+    { to: "/signup",  label: "Create Account" },
+    { to: "/doctors", label: "Search Doctors"  },
+    { to: "/login",   label: "Sign In"         },
   ];
 
   const contactItems = [
@@ -34,7 +31,7 @@ export default function Footer() {
             <Link to="/" className="d-inline-flex align-items-center gap-2 fw-bold fs-5 text-primary text-decoration-none mb-3">
               <Stethoscope size={22} /> TABIBI
             </Link>
-            <p className="text-secondary small mb-3">{t("footer.desc")}</p>
+            <p className="text-secondary small mb-3">Your trusted online medical appointment platform. Connecting patients with qualified doctors seamlessly.</p>
             <div className="d-flex flex-column gap-2">
               {contactItems.map((item) => (
                 <span key={item.value} className="d-flex align-items-center gap-2 small text-secondary">
@@ -50,7 +47,7 @@ export default function Footer() {
           {/* Quick Links */}
           <div className="col-6 col-md-3 offset-md-1">
             <h6 className="fw-bold mb-3 text-uppercase" style={{ fontSize: "0.75rem", letterSpacing: "0.05em" }}>
-              {t("footer.quick_links")}
+              Quick Links
             </h6>
             <div className="d-flex flex-column gap-2">
               {quickLinks.map((link) => (
@@ -64,7 +61,7 @@ export default function Footer() {
           {/* For Patients */}
           <div className="col-6 col-md-3">
             <h6 className="fw-bold mb-3 text-uppercase" style={{ fontSize: "0.75rem", letterSpacing: "0.05em" }}>
-              {t("footer.for_patients")}
+              For Patients
             </h6>
             <div className="d-flex flex-column gap-2">
               {patientLinks.map((link) => (
@@ -81,14 +78,14 @@ export default function Footer() {
       {/* Bottom bar */}
       <div className="border-top py-3 bg-body-secondary">
         <div className="container d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2">
-          <span className="text-secondary small">© {new Date().getFullYear()} TABIBI. {t("footer.rights")}</span>
+          <span className="text-secondary small">&copy; {new Date().getFullYear()} TABIBI. All rights reserved.</span>
           <span className="text-secondary small d-flex align-items-center gap-1">
-            Made with <Heart size={13} className="text-danger mx-1" fill="currentColor" /> {t("footer.made_in")}
+            Made with <Heart size={13} className="text-danger mx-1" fill="currentColor" /> in Morocco
           </span>
           <div className="d-flex gap-3">
-            <Link to="/about"   className="text-secondary small text-decoration-none">{t("footer.privacy")}</Link>
-            <Link to="/about"   className="text-secondary small text-decoration-none">{t("footer.terms")}</Link>
-            <Link to="/contact" className="text-secondary small text-decoration-none">{t("footer.support")}</Link>
+            <Link to="/about"   className="text-secondary small text-decoration-none">Privacy</Link>
+            <Link to="/about"   className="text-secondary small text-decoration-none">Terms</Link>
+            <Link to="/contact" className="text-secondary small text-decoration-none">Support</Link>
           </div>
         </div>
       </div>

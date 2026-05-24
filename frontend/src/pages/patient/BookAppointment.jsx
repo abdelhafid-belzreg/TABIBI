@@ -27,6 +27,7 @@ export default function BookAppointment() {
   const [availability, setAvailability] = useState([]);
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
+  const [bookedSlots,  setBookedSlots]  = useState([]);
   const [notes,        setNotes]        = useState("");
   const [loading,      setLoading]      = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
@@ -59,6 +60,22 @@ export default function BookAppointment() {
     };
     fetchData();
   }, [doctorId]);
+
+  useEffect(() => {
+    if (!selectedDate || !doctorId) return;
+    const fetchBooked = async () => {
+      try {
+        const res = await api.get(`/doctors/${doctorId}/booked-slots`, {
+          params: { date: selectedDate },
+        });
+        setBookedSlots(res.data);
+        setSelectedTime("");
+      } catch {
+        setBookedSlots([]);
+      }
+    };
+    fetchBooked();
+  }, [selectedDate, doctorId]);
 
   const availableDays  = availability.map((a) => a.day_of_week);
   const isDateAvailable = (date) => availableDays.includes(date.getDay());
@@ -289,18 +306,27 @@ export default function BookAppointment() {
               <p className="text-secondary small mb-0">No slots available for this day.</p>
             ) : (
               <div className="d-flex flex-wrap gap-2">
-                {timeSlots.map((t) => (
-                  <button
-                    key={t}
-                    type="button"
-                    onClick={() => setSelectedTime(t)}
-                    className={`btn btn-sm ${
-                      selectedTime === t ? "btn-primary" : "btn-outline-primary"
-                    }`}
-                  >
-                    {t}
-                  </button>
-                ))}
+                {timeSlots.map((t) => {
+                  const isBooked = bookedSlots.includes(t);
+                  return (
+                    <button
+                      key={t}
+                      type="button"
+                      disabled={isBooked}
+                      onClick={() => setSelectedTime(t)}
+                      className={`btn btn-sm ${
+                        isBooked
+                          ? "btn-outline-secondary opacity-50 text-decoration-line-through"
+                          : selectedTime === t
+                            ? "btn-primary"
+                            : "btn-outline-primary"
+                      }`}
+                      title={isBooked ? "Already booked" : ""}
+                    >
+                      {t}
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>

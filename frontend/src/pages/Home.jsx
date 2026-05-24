@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
-import { useTranslation } from "react-i18next";
 import { Stethoscope, Search, CalendarCheck, Shield, Heart, Brain,
   Eye, Smile, Baby, Bone, ScanLine, UserCheck, ArrowRight,
 } from "lucide-react";
@@ -49,25 +48,24 @@ function FadeIn({ children, delay = 0, direction = "up", className = "" }) {
 }
 
 export default function Home() {
-  const { t } = useTranslation();
   const [stats,        setStats]        = useState({ total_patients: 0, total_appointments: 0, total_doctors: 0 });
   const [statsLoading, setStatsLoading] = useState(true);
 
   const specialties = [
-    { name: t("home.step1_title"), icon: Stethoscope },
-    { name: "Cardiology",         icon: Heart        },
-    { name: "Dermatology",        icon: ScanLine     },
-    { name: "Neurology",          icon: Brain        },
-    { name: "Ophthalmology",      icon: Eye          },
-    { name: "Dentistry",          icon: Smile        },
-    { name: "Pediatrics",         icon: Baby         },
-    { name: "Orthopedics",        icon: Bone         },
+    { name: "General Medicine",  icon: Stethoscope },
+    { name: "Cardiology",        icon: Heart        },
+    { name: "Dermatology",       icon: ScanLine     },
+    { name: "Neurology",         icon: Brain        },
+    { name: "Ophthalmology",     icon: Eye          },
+    { name: "Dentistry",         icon: Smile        },
+    { name: "Pediatrics",        icon: Baby         },
+    { name: "Orthopedics",       icon: Bone         },
   ];
 
   const steps = [
-    { icon: Search,        title: t("home.step1_title"), desc: t("home.step1_desc") },
-    { icon: CalendarCheck, title: t("home.step2_title"), desc: t("home.step2_desc") },
-    { icon: UserCheck,     title: t("home.step3_title"), desc: t("home.step3_desc") },
+    { icon: Search,        title: "Search Doctors",  desc: "Find specialists by name, specialty, or availability" },
+    { icon: CalendarCheck, title: "Book Appointment", desc: "Choose a convenient time slot and confirm your booking" },
+    { icon: UserCheck,     title: "Get Treated",     desc: "Visit your doctor at the scheduled time" },
   ];
 
   useEffect(() => {
@@ -82,9 +80,9 @@ export default function Home() {
   }, []);
 
   const statItems = [
-    { value: stats.total_patients,     icon: Heart,         label: t("home.satisfied_patients"),      color: "danger"  },
-    { value: stats.total_appointments, icon: CalendarCheck, label: t("home.successful_appointments"), color: "success" },
-    { value: stats.total_doctors,      icon: UserCheck,     label: t("home.top_doctors"),             color: "primary" },
+    { value: stats.total_patients,     icon: Heart,         label: "Satisfied Patients",      color: "danger"  },
+    { value: stats.total_appointments, icon: CalendarCheck, label: "Successful Appointments", color: "success" },
+    { value: stats.total_doctors,      icon: UserCheck,     label: "Top Doctors",             color: "primary" },
   ];
 
   return (
@@ -99,33 +97,33 @@ export default function Home() {
               <div className="mb-3">
                 <span className="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-2 d-inline-flex align-items-center gap-1">
                   <Shield size={13} />
-                  {t("home.trusted_by")}{" "}
+                  Trusted by{" "}
                   {statsLoading ? "..." : <strong>{stats.total_patients.toLocaleString()}+</strong>}{" "}
-                  {t("home.patients")}
+                  patients
                 </span>
               </div>
             </FadeIn>
 
             <FadeIn delay={100}>
               <h1 className="display-4 fw-bold mb-3 lh-sm">
-                {t("home.hero_title")}{" "}
-                <span className="text-primary">{t("home.hero_title_highlight")}</span>
+                Your Health,{" "}
+                <span className="text-primary">Our Priority</span>
               </h1>
             </FadeIn>
 
             <FadeIn delay={200}>
               <p className="lead text-secondary mb-4 mx-auto" style={{ maxWidth: 600 }}>
-                {t("home.hero_subtitle")}
+                Book appointments with top-rated doctors instantly. TABIBI connects you with qualified healthcare professionals for a seamless medical experience.
               </p>
             </FadeIn>
 
             <FadeIn delay={300}>
               <div className="d-flex flex-column flex-sm-row gap-2 justify-content-center mb-4">
                 <Link to="/doctors" className="btn btn-primary btn-lg d-flex align-items-center gap-2 justify-content-center">
-                  {t("home.find_doctor")} <ArrowRight size={18} />
+                  Find a Doctor <ArrowRight size={18} />
                 </Link>
                 <Link to="/signup" className="btn btn-outline-primary btn-lg">
-                  {t("home.join_doctor")}
+                  Join as Doctor
                 </Link>
               </div>
             </FadeIn>
@@ -153,10 +151,9 @@ export default function Home() {
           <FadeIn>
             <div className="text-center mb-4">
               <h2 className="fw-bold mb-2">
-                {t("home.specialties_title")}{" "}
-                <span className="text-primary">{t("home.specialties_title_highlight")}</span>
+                Browse by <span className="text-primary">Specialty</span>
               </h2>
-              <p className="text-secondary">{t("home.specialties_subtitle")}</p>
+              <p className="text-secondary">Find the right specialist for your needs</p>
             </div>
           </FadeIn>
 
@@ -182,7 +179,7 @@ export default function Home() {
           <FadeIn delay={200}>
             <div className="text-center mt-4">
               <Link to="/doctors" className="btn btn-outline-primary d-inline-flex align-items-center gap-1">
-                {t("home.view_all")} <ArrowRight size={15} />
+                View All Specialties <ArrowRight size={15} />
               </Link>
             </div>
           </FadeIn>
@@ -195,10 +192,9 @@ export default function Home() {
           <FadeIn>
             <div className="text-center mb-4">
               <h2 className="fw-bold mb-2">
-                {t("home.how_title")}{" "}
-                <span className="text-primary">{t("home.how_title_highlight")}</span>
+                How It <span className="text-primary">Works</span>
               </h2>
-              <p className="text-secondary">{t("home.how_subtitle")}</p>
+              <p className="text-secondary">Book your appointment in 3 simple steps</p>
             </div>
           </FadeIn>
 
@@ -258,11 +254,11 @@ export default function Home() {
           <FadeIn direction="up">
             <div className="card border-0 shadow-sm bg-primary text-white text-center p-5">
               <div className="mb-2"><Shield size={36} className="opacity-75" /></div>
-              <h2 className="fw-bold mb-3">{t("home.cta_title")}</h2>
-              <p className="mb-4 opacity-75 lead">{t("home.cta_subtitle")}</p>
+              <h2 className="fw-bold mb-3">Ready to Take Control of Your Health?</h2>
+              <p className="mb-4 opacity-75 lead">Join TABIBI today and connect with the best healthcare professionals.</p>
               <div className="d-flex flex-column flex-sm-row justify-content-center gap-3">
-                <Link to="/signup" className="btn btn-light btn-lg fw-semibold">{t("home.join_tabibi")}</Link>
-                <Link to="/doctors" className="btn btn-outline-light btn-lg">{t("home.find_doctor")}</Link>
+                <Link to="/signup" className="btn btn-light btn-lg fw-semibold">Join TABIBI</Link>
+                <Link to="/doctors" className="btn btn-outline-light btn-lg">Find a Doctor</Link>
               </div>
             </div>
           </FadeIn>

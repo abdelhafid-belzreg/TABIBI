@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import { useTranslation } from "react-i18next";
 import { Mail, Phone, MapPin, Clock, Send, MessageSquare, ArrowRight } from "lucide-react";
 import api from "@/lib/api";
 
@@ -30,7 +29,6 @@ function FadeIn({ children, delay = 0, direction = "up", className = "" }) {
 const initialForm = { name: "", email: "", subject: "", message: "" };
 
 export default function Contact() {
-  const { t } = useTranslation();
   const [form,    setForm]    = useState(initialForm);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -38,17 +36,17 @@ export default function Contact() {
   const [openFaq, setOpenFaq] = useState(null);
 
   const contactInfo = [
-    { icon: Mail,   title: t("contact.email_title"),   value: "noreply.tabibi@gmail.com",      color: "primary", href: "mailto:noreply.tabibi@gmail.com" },
-    { icon: Phone,  title: t("contact.phone_title"),   value: "+212 7 6786 4261",              color: "success", href: "tel:+21276864261"                },
-    { icon: MapPin, title: t("contact.address_title"), value: t("contact.address_value"),      color: "danger",  href: null                             },
-    { icon: Clock,  title: t("contact.hours_title"),   value: t("contact.hours_value"),        color: "warning", href: null                             },
+    { icon: Mail,   title: "Email",   value: "noreply.tabibi@gmail.com", color: "primary", href: "mailto:noreply.tabibi@gmail.com" },
+    { icon: Phone,  title: "Phone",   value: "+212 7 6786 4261",         color: "success", href: "tel:+21276864261"                },
+    { icon: MapPin, title: "Address", value: "Salé, Rabat-Salé-Kénitra, Morocco", color: "danger",  href: null                             },
+    { icon: Clock,  title: "Hours",   value: "Mon-Fri: 8AM - 6PM",       color: "warning", href: null                             },
   ];
 
   const faqs = [
-    { q: t("contact.faq1_q"), a: t("contact.faq1_a") },
-    { q: t("contact.faq2_q"), a: t("contact.faq2_a") },
-    { q: t("contact.faq3_q"), a: t("contact.faq3_a") },
-    { q: t("contact.faq4_q"), a: t("contact.faq4_a") },
+    { q: "How do I book an appointment?", a: "Search for a doctor, select an available time slot, and confirm your booking." },
+    { q: "Can I cancel my appointment?",  a: "Yes, you can cancel or reschedule from your dashboard up to 2 hours before." },
+    { q: "How do I join as a doctor?",    a: "Sign up as a doctor and our team will verify your credentials within 24-48 hours." },
+    { q: "Is my data secure?",            a: "Absolutely. All data is encrypted and stored securely following industry standards." },
   ];
 
   const handleChange = (e) => {
@@ -73,7 +71,7 @@ export default function Contact() {
         });
         setErrors(mapped);
       } else {
-        setErrors({ general: t("contact.error") });
+        setErrors({ general: "Something went wrong. Please try again." });
       }
     } finally {
       setLoading(false);
@@ -88,16 +86,16 @@ export default function Contact() {
         <div className="container text-center">
           <FadeIn delay={0}>
             <span className="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-2 d-inline-flex align-items-center gap-1 mb-3">
-              <MessageSquare size={13} /> {t("contact.badge")}
+              <MessageSquare size={13} /> Get in Touch
             </span>
           </FadeIn>
           <FadeIn delay={100}>
             <h1 className="display-5 fw-bold mb-3">
-              {t("contact.title")} <span className="text-primary">{t("contact.title_highlight")}</span>
+              Contact <span className="text-primary">Us</span>
             </h1>
           </FadeIn>
           <FadeIn delay={200}>
-            <p className="lead text-secondary mx-auto mb-0" style={{ maxWidth: 600 }}>{t("contact.subtitle")}</p>
+            <p className="lead text-secondary mx-auto mb-0" style={{ maxWidth: 600 }}>Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
           </FadeIn>
         </div>
       </section>
@@ -138,12 +136,12 @@ export default function Contact() {
                 <div className="card border-0 shadow-sm">
                   <div className="card-header bg-body-secondary py-3 d-flex align-items-center gap-2">
                     <Send size={15} className="text-secondary" />
-                    <strong className="small text-uppercase text-secondary">{t("contact.form_header")}</strong>
+                    <strong className="small text-uppercase text-secondary">Send us a Message</strong>
                   </div>
                   <div className="card-body p-4">
                     {success && (
                       <div className="alert alert-success d-flex align-items-center gap-2 mb-4">
-                        <Mail size={16} /> <span>{t("contact.success")}</span>
+                        <Mail size={16} /> <span>Message sent! We'll get back to you within 24 hours.</span>
                       </div>
                     )}
                     {errors.general && (
@@ -152,30 +150,30 @@ export default function Contact() {
                     <form onSubmit={handleSubmit} noValidate>
                       <div className="row g-3 mb-3">
                         <div className="col-sm-6">
-                          <label htmlFor="name" className="form-label small fw-semibold">{t("contact.name")}</label>
-                          <input id="name" name="name" value={form.name} onChange={handleChange} className={`form-control ${errors.name ? "is-invalid" : ""}`} placeholder={t("contact.name_placeholder")} required />
+                          <label htmlFor="name" className="form-label small fw-semibold">Full Name</label>
+                          <input id="name" name="name" value={form.name} onChange={handleChange} className={`form-control ${errors.name ? "is-invalid" : ""}`} placeholder="John Doe" required />
                           {errors.name && <div className="invalid-feedback">{errors.name}</div>}
                         </div>
                         <div className="col-sm-6">
-                          <label htmlFor="email" className="form-label small fw-semibold">{t("contact.email")}</label>
-                          <input id="email" name="email" type="email" value={form.email} onChange={handleChange} className={`form-control ${errors.email ? "is-invalid" : ""}`} placeholder={t("contact.email_placeholder")} required />
+                          <label htmlFor="email" className="form-label small fw-semibold">Email</label>
+                          <input id="email" name="email" type="email" value={form.email} onChange={handleChange} className={`form-control ${errors.email ? "is-invalid" : ""}`} placeholder="example@example.com" required />
                           {errors.email && <div className="invalid-feedback">{errors.email}</div>}
                         </div>
                       </div>
                       <div className="mb-3">
-                        <label htmlFor="subject" className="form-label small fw-semibold">{t("contact.subject")}</label>
-                        <input id="subject" name="subject" value={form.subject} onChange={handleChange} className={`form-control ${errors.subject ? "is-invalid" : ""}`} placeholder={t("contact.subject_placeholder")} required />
+                        <label htmlFor="subject" className="form-label small fw-semibold">Subject</label>
+                        <input id="subject" name="subject" value={form.subject} onChange={handleChange} className={`form-control ${errors.subject ? "is-invalid" : ""}`} placeholder="How can we help?" required />
                         {errors.subject && <div className="invalid-feedback">{errors.subject}</div>}
                       </div>
                       <div className="mb-4">
-                        <label htmlFor="message" className="form-label small fw-semibold">{t("contact.message")}</label>
-                        <textarea id="message" name="message" value={form.message} onChange={handleChange} className={`form-control ${errors.message ? "is-invalid" : ""}`} placeholder={t("contact.message_placeholder")} rows={5} required />
+                        <label htmlFor="message" className="form-label small fw-semibold">Message</label>
+                        <textarea id="message" name="message" value={form.message} onChange={handleChange} className={`form-control ${errors.message ? "is-invalid" : ""}`} placeholder="Tell us more about your question..." rows={5} required />
                         {errors.message && <div className="invalid-feedback">{errors.message}</div>}
                       </div>
                       <button type="submit" className="btn btn-primary d-flex align-items-center gap-2" disabled={loading}>
                         {loading
-                          ? <><span className="spinner-border spinner-border-sm" /> {t("contact.sending")}</>
-                          : <><Send size={15} /> {t("contact.send")}</>}
+                          ? <><span className="spinner-border spinner-border-sm" /> Sending...</>
+                          : <><Send size={15} /> Send Message</>}
                       </button>
                     </form>
                   </div>
@@ -189,7 +187,7 @@ export default function Contact() {
                 <div className="card border-0 shadow-sm h-100">
                   <div className="card-header bg-body-secondary py-3 d-flex align-items-center gap-2">
                     <MessageSquare size={15} className="text-secondary" />
-                    <strong className="small text-uppercase text-secondary">{t("contact.faq_header")}</strong>
+                    <strong className="small text-uppercase text-secondary">Frequently Asked</strong>
                   </div>
                   <div className="card-body p-0">
                     <div className="accordion accordion-flush">
@@ -221,13 +219,13 @@ export default function Contact() {
           <FadeIn direction="up">
             <div className="card border-0 shadow-sm bg-primary text-white text-center p-5">
               <Mail size={36} className="mx-auto mb-3 opacity-75" />
-              <h2 className="fw-bold mb-3">{t("contact.cta_title")}</h2>
-              <p className="opacity-75 lead mb-4 mx-auto" style={{ maxWidth: 500 }}>{t("contact.cta_subtitle")}</p>
+              <h2 className="fw-bold mb-3">Still Have Questions?</h2>
+              <p className="opacity-75 lead mb-4 mx-auto" style={{ maxWidth: 500 }}>Our support team is available Monday to Friday, 8AM to 6PM. We usually respond within a few hours.</p>
               <div className="d-flex flex-column flex-sm-row justify-content-center gap-3">
                 <a href="mailto:noreply.tabibi@gmail.com" className="btn btn-light btn-lg fw-semibold d-inline-flex align-items-center gap-2 justify-content-center">
-                  {t("contact.email_us")} <ArrowRight size={18} />
+                  Email Us <ArrowRight size={18} />
                 </a>
-                <a href="tel:+21276864261" className="btn btn-outline-light btn-lg">{t("contact.call_us")}</a>
+                <a href="tel:+21276864261" className="btn btn-outline-light btn-lg">Call Us</a>
               </div>
             </div>
           </FadeIn>

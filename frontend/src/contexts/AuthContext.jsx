@@ -37,8 +37,8 @@ export function AuthProvider({ children }) {
     const user = res.data.user;
     const token = res.data.token; // ← get token from response
 
-    // do not save unverified user to context
-    if (!user.email_verified_at) {
+    // do not save unverified user to context (except admins)
+    if (!user.email_verified_at && user.role !== 'admin') {
       return user;
     }
 

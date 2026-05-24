@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import {
   Stethoscope, User, UserCheck, Mail, Phone,
   Lock, Eye, EyeOff, Building, MapPin,
@@ -41,7 +40,6 @@ const InputGroup = ({ icon: Icon, children }) => (
 );
 
 export default function Signup() {
-  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [role,             setRole]             = useState("patient");
@@ -79,7 +77,7 @@ export default function Signup() {
         const res = await api.get("/specialties");
         setSpecialties(res.data);
       } catch {
-        setError(t("common.error"));
+        setError("Something went wrong. Please try again.");
       } finally {
         setSpecialtyLoading(false);
       }
@@ -90,12 +88,12 @@ export default function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    if (!isValidPhone(phone))                          { setError(t("signup.phone_error")); return; }
-    if (!isValidCIN(cin))                              { setError(t("signup.cin_error")); return; }
-    if (password !== confirmPassword)                  { setError(t("signup.passwords_no_match")); return; }
-    if (strength?.key === "weak")                      { setError(t("reset_password.weak_error")); return; }
-    if (role === "patient" && !dateOfBirth)            { setError(t("signup.dob_required")); return; }
-    if (role === "patient" && age !== null && age < 18){ setError(t("signup.age_error")); return; }
+    if (!isValidPhone(phone))                          { setError("Invalid phone number. Use Moroccan format: 06XXXXXXXX or +212 6XXXXXXXX"); return; }
+    if (!isValidCIN(cin))                              { setError("Invalid CIN. Expected format: AB123456 or A123456"); return; }
+    if (password !== confirmPassword)                  { setError("Passwords do not match."); return; }
+    if (strength?.key === "weak")                      { setError("Password is too weak. Please choose a stronger password."); return; }
+    if (role === "patient" && !dateOfBirth)            { setError("Date of birth is required."); return; }
+    if (role === "patient" && age !== null && age < 18){ setError("You must be at least 18 years old."); return; }
 
     setLoading(true);
     try {
@@ -108,7 +106,7 @@ export default function Signup() {
       setSent(true);
     } catch (err) {
       const errors = err.response?.data?.errors;
-      setError(errors ? Object.values(errors)[0][0] : err.response?.data?.message || t("common.error"));
+      setError(errors ? Object.values(errors)[0][0] : err.response?.data?.message || "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -120,7 +118,7 @@ export default function Signup() {
     try {
       await api.post("/email/resend", { email });
     } catch {
-      setError(t("common.error"));
+      setError("Something went wrong. Please try again.");
     } finally {
       setResending(false);
     }
@@ -135,17 +133,17 @@ export default function Signup() {
               <div className="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-4" style={{ width: 72, height: 72 }}>
                 <MailCheck size={34} className="text-primary" />
               </div>
-              <h4 className="fw-bold mb-2">{t("signup.check_email")}</h4>
-              <p className="text-secondary small mb-1">{t("signup.check_email_msg")}</p>
+              <h4 className="fw-bold mb-2">Check your email</h4>
+              <p className="text-secondary small mb-1">We sent a verification link to</p>
               <p className="fw-semibold mb-4">{email}</p>
-              <p className="text-secondary small mb-4">{t("signup.check_email_desc")}</p>
+              <p className="text-secondary small mb-4">Click the link in the email to verify your account. Check your spam folder if you don't see it.</p>
               {error && <div className="alert alert-danger py-2 small mb-3">{error}</div>}
               <button className="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center gap-2 mb-3" onClick={handleResend} disabled={resending}>
                 {resending
-                  ? <><span className="spinner-border spinner-border-sm" /> {t("common.loading")}</>
-                  : <><RefreshCw size={15} /> {t("signup.resend")}</>}
+                  ? <><span className="spinner-border spinner-border-sm" /> Loading...</>
+                  : <><RefreshCw size={15} /> Resend verification email</>}
               </button>
-              <button className="btn btn-primary w-100" onClick={() => navigate("/login")}>{t("signup.go_to_signin")}</button>
+              <button className="btn btn-primary w-100" onClick={() => navigate("/login")}>Go to Sign In</button>
             </div>
           </div>
         </div>
@@ -161,8 +159,8 @@ export default function Signup() {
           <div className="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" style={{ width: 64, height: 64 }}>
             <Stethoscope size={30} className="text-primary" />
           </div>
-          <h2 className="fw-bold mb-1">{t("signup.title")}</h2>
-          <p className="text-secondary small mb-0">{t("signup.subtitle")}</p>
+          <h2 className="fw-bold mb-1">Create your account</h2>
+          <p className="text-secondary small mb-0">Join TABIBI and take control of your health</p>
         </div>
 
         <div className="card border-0 shadow-sm">
@@ -172,12 +170,12 @@ export default function Signup() {
             <div className="row g-2 mb-4">
               <div className="col-6">
                 <button type="button" onClick={() => setRole("patient")} className={`btn w-100 d-flex flex-column align-items-center py-3 gap-1 ${role === "patient" ? "btn-primary" : "btn-outline-primary"}`}>
-                  <User size={22} /> <span className="fw-semibold small">{t("signup.patient")}</span>
+                  <User size={22} /> <span className="fw-semibold small">Patient</span>
                 </button>
               </div>
               <div className="col-6">
                 <button type="button" onClick={() => setRole("doctor")} className={`btn w-100 d-flex flex-column align-items-center py-3 gap-1 ${role === "doctor" ? "btn-primary" : "btn-outline-primary"}`}>
-                  <UserCheck size={22} /> <span className="fw-semibold small">{t("signup.doctor")}</span>
+                  <UserCheck size={22} /> <span className="fw-semibold small">Doctor</span>
                 </button>
               </div>
             </div>
@@ -193,28 +191,28 @@ export default function Signup() {
               <div className="row g-3">
 
                 <div className="col-12">
-                  <label className="form-label small fw-semibold">{t("signup.full_name")}</label>
+                  <label className="form-label small fw-semibold">Full Name</label>
                   <InputGroup icon={User}>
-                    <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} className="form-control border-start-0 ps-0" placeholder={t("signup.full_name")} required />
+                    <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} className="form-control border-start-0 ps-0" placeholder="Full Name" required />
                   </InputGroup>
                 </div>
 
                 <div className="col-md-6">
-                  <label className="form-label small fw-semibold">{t("signup.email")}</label>
+                  <label className="form-label small fw-semibold">Email</label>
                   <InputGroup icon={Mail}>
                     <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="form-control border-start-0 ps-0" placeholder="you@example.com" required />
                   </InputGroup>
                 </div>
 
                 <div className="col-md-6">
-                  <label className="form-label small fw-semibold">{t("signup.phone")}</label>
+                  <label className="form-label small fw-semibold">Phone</label>
                   <InputGroup icon={Phone}>
                     <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className={`form-control border-start-0 ps-0 ${phone ? isValidPhone(phone) ? "is-valid" : "is-invalid" : ""}`} placeholder="06XXXXXXXX" required />
                   </InputGroup>
                 </div>
 
                 <div className="col-md-6">
-                  <label className="form-label small fw-semibold">{t("signup.cin")}</label>
+                  <label className="form-label small fw-semibold">CIN</label>
                   <InputGroup icon={CreditCard}>
                     <input type="text" value={cin} onChange={(e) => setCin(e.target.value.toUpperCase())} className={`form-control border-start-0 ps-0 ${cin ? isValidCIN(cin) ? "is-valid" : "is-invalid" : ""}`} placeholder="AB123456" required />
                   </InputGroup>
@@ -223,7 +221,7 @@ export default function Signup() {
                 {/* ── Date of Birth — patient only ── */}
                 {role === "patient" && (
                   <div className="col-md-6">
-                    <label className="form-label small fw-semibold">{t("signup.date_of_birth")}</label>
+                    <label className="form-label small fw-semibold">Date of Birth</label>
                     <InputGroup icon={Calendar}>
                       <input
                         type="date"
@@ -239,7 +237,7 @@ export default function Signup() {
                     </InputGroup>
                     {dateOfBirth && age !== null && (
                       <div className={`form-text ${age < 18 ? "text-danger" : "text-success"}`}>
-                        {age < 18 ? t("signup.age_error") : t("signup.age_display", { age })}
+                        {age < 18 ? "You must be at least 18 years old." : `Age: ${age} years`}
                       </div>
                     )}
                   </div>
@@ -252,28 +250,28 @@ export default function Signup() {
                       <div className="d-flex align-items-center gap-2 my-1">
                         <hr className="flex-fill m-0" />
                         <span className="text-secondary small px-2 d-flex align-items-center gap-1">
-                          <Stethoscope size={13} /> {t("signup.doctor_details")}
+                          <Stethoscope size={13} /> Doctor Details
                         </span>
                         <hr className="flex-fill m-0" />
                       </div>
                     </div>
 
                     <div className="col-md-6">
-                      <label className="form-label small fw-semibold">{t("signup.clinic_name")}</label>
+                      <label className="form-label small fw-semibold">Clinic Name</label>
                       <InputGroup icon={Building}>
                         <input
                           type="text"
                           value={clinicName}
                           onChange={(e) => setClinicName(e.target.value)}
                           className="form-control border-start-0 ps-0"
-                          placeholder={t("signup.clinic_name")}
+                          placeholder="Clinic Name"
                           required
                         />
                       </InputGroup>
                     </div>
 
                     <div className="col-md-6">
-                      <label className="form-label small fw-semibold">{t("signup.specialty")}</label>
+                      <label className="form-label small fw-semibold">Specialty</label>
                       <InputGroup icon={Microscope}>
                         <select
                           value={specialtyId}
@@ -283,7 +281,7 @@ export default function Signup() {
                           disabled={specialtyLoading}
                         >
                           <option value="">
-                            {specialtyLoading ? t("common.loading") : t("signup.select_specialty")}
+                            {specialtyLoading ? "Loading..." : "Select a specialty"}
                           </option>
                           {specialties.map((s) => (
                             <option key={s.id} value={s.id}>{s.name}</option>
@@ -293,34 +291,34 @@ export default function Signup() {
                       {specialtyLoading && (
                         <div className="form-text d-flex align-items-center gap-1">
                           <span className="spinner-border spinner-border-sm" style={{ width: 12, height: 12 }} />
-                          {t("signup.loading_specialties")}
+                          Loading specialties...
                         </div>
                       )}
                     </div>
 
                     <div className="col-md-6">
-                      <label className="form-label small fw-semibold">{t("signup.city")}</label>
+                      <label className="form-label small fw-semibold">City</label>
                       <InputGroup icon={MapPin}>
                         <input
                           type="text"
                           value={city}
                           onChange={(e) => setCity(e.target.value)}
                           className="form-control border-start-0 ps-0"
-                          placeholder={t("signup.city")}
+                          placeholder="City"
                           required
                         />
                       </InputGroup>
                     </div>
 
                     <div className="col-md-6">
-                      <label className="form-label small fw-semibold">{t("signup.location")}</label>
+                      <label className="form-label small fw-semibold">Location</label>
                       <InputGroup icon={MapPin}>
                         <input
                           type="text"
                           value={location}
                           onChange={(e) => setLocation(e.target.value)}
                           className="form-control border-start-0 ps-0"
-                          placeholder={t("signup.location")}
+                          placeholder="Location"
                           required
                         />
                       </InputGroup>
@@ -333,7 +331,7 @@ export default function Signup() {
                   <div className="d-flex align-items-center gap-2 my-1">
                     <hr className="flex-fill m-0" />
                     <span className="text-secondary small px-2 d-flex align-items-center gap-1">
-                      <Lock size={13} /> {t("signup.security")}
+                      <Lock size={13} /> Security
                     </span>
                     <hr className="flex-fill m-0" />
                   </div>
@@ -341,7 +339,7 @@ export default function Signup() {
 
                 {/* ── Password ── */}
                 <div className="col-md-6">
-                  <label className="form-label small fw-semibold">{t("signup.password")}</label>
+                  <label className="form-label small fw-semibold">Password</label>
                   <div className="input-group">
                     <span className="input-group-text bg-body-secondary border-end-0">
                       <Lock size={15} className="text-secondary" />
@@ -387,9 +385,9 @@ export default function Signup() {
                       </div>
                       <div className={`small text-${strength.color} d-flex align-items-center gap-1`}>
                         <strength.icon size={12} />
-                        {t(`signup.strength_${strength.key}`)} {t("signup.password").toLowerCase()}
-                        {strength.key === "weak" && ` ${t("signup.strength_weak_hint")}`}
-                        {strength.key === "fair" && ` ${t("signup.strength_fair_hint")}`}
+                        {strength.key.charAt(0).toUpperCase() + strength.key.slice(1)} password
+                        {strength.key === "weak" && " — add uppercase, numbers & symbols"}
+                        {strength.key === "fair" && " — add symbols or more characters"}
                       </div>
                     </div>
                   )}
@@ -398,10 +396,10 @@ export default function Signup() {
                   {password && (
                     <ul className="list-unstyled small mb-0 mt-2 d-flex flex-wrap gap-2">
                       {[
-                        { rule: password.length >= 8,           text: t("signup.rule_chars")    },
-                        { rule: /[A-Z]/.test(password),         text: t("signup.rule_uppercase") },
-                        { rule: /[0-9]/.test(password),         text: t("signup.rule_number")   },
-                        { rule: /[^A-Za-z0-9]/.test(password),  text: t("signup.rule_symbol")   },
+                        { rule: password.length >= 8,           text: "8+ chars"    },
+                        { rule: /[A-Z]/.test(password),         text: "Uppercase" },
+                        { rule: /[0-9]/.test(password),         text: "Number"   },
+                        { rule: /[^A-Za-z0-9]/.test(password),  text: "Symbol"   },
                       ].map((r) => (
                         <li
                           key={r.text}
@@ -419,7 +417,7 @@ export default function Signup() {
 
                 {/* ── Confirm Password ── */}
                 <div className="col-md-6">
-                  <label className="form-label small fw-semibold">{t("signup.confirm_password")}</label>
+                  <label className="form-label small fw-semibold">Confirm Password</label>
                   <div className="input-group">
                     <span className="input-group-text bg-body-secondary border-end-0">
                       <Lock size={15} className="text-secondary" />
@@ -449,10 +447,10 @@ export default function Signup() {
                     </button>
                   </div>
                   {confirmPassword && confirmPassword !== password && (
-                    <div className="invalid-feedback d-block small">{t("signup.passwords_no_match")}</div>
+                    <div className="invalid-feedback d-block small">Passwords do not match.</div>
                   )}
                   {confirmPassword && confirmPassword === password && (
-                    <div className="valid-feedback d-block small">{t("signup.passwords_match")}</div>
+                    <div className="valid-feedback d-block small">Passwords match.</div>
                   )}
                 </div>
 
@@ -466,10 +464,10 @@ export default function Signup() {
                     {loading ? (
                       <>
                         <span className="spinner-border spinner-border-sm" />
-                        {t("signup.creating_account")}
+                        Creating account...
                       </>
                     ) : (
-                      `${t("signup.sign_up_as")} ${role === "doctor" ? t("signup.doctor") : t("signup.patient")}`
+                      `Sign up as ${role === "doctor" ? "Doctor" : "Patient"}`
                     )}
                   </button>
                 </div>
@@ -478,9 +476,9 @@ export default function Signup() {
             </form>
 
             <p className="text-center text-body-secondary mt-3 mb-0 small">
-              {t("signup.already_have_account")}{" "}
+              Already have an account?{" "}
               <Link to="/login" className="text-primary fw-medium text-decoration-underline">
-                {t("signup.signin")}
+                Sign in
               </Link>
             </p>
 

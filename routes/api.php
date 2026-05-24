@@ -23,6 +23,9 @@ Route::get('/doctors',                   [DoctorController::class, 'index']);
 Route::get('/doctors/{id}',              [DoctorController::class, 'show']);
 Route::get('/doctors/{id}/availability', [DoctorController::class, 'getPublicAvailability']); // ✅ Must be here (outside auth)
 
+// Booked slots (public — needed before login)
+Route::get('/doctors/{id}/booked-slots', [AppointmentController::class, 'getBookedSlots']);
+
 // Specialties (public)
 Route::get('/specialties', [AdminController::class, 'getSpecialties']);
 
@@ -80,5 +83,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Reports
         Route::get('/appointments',                [AdminController::class, 'getAppointments']);
+        Route::get('/reports',                     [AdminController::class, 'getReportsData']);
     });
 });

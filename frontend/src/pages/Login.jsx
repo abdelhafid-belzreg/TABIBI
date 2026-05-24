@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import { Stethoscope, Mail, Lock, LogIn, Eye, EyeOff, MailCheck, RefreshCw } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
 import api from "@/lib/api";
 
 export default function Login() {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const { login } = useAuth();
   const [email,       setEmail]       = useState("");
@@ -40,7 +38,7 @@ export default function Login() {
       else if (user.role === "doctor") navigate("/doctor/dashboard");
       else                             navigate("/patient/dashboard");
     } catch (err) {
-      toast({ title: t("login.failed"), description: err.response?.data?.message || t("login.invalid"), variant: "destructive" });
+      toast({ title: "Login Failed", description: err.response?.data?.message || "Invalid credentials. Please try again.", variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -52,9 +50,9 @@ export default function Login() {
     setResendError("");
     try {
       await api.post("/email/resend", { email });
-      setResendMsg(t("login.resend"));
+      setResendMsg("Verification email sent!");
     } catch {
-      setResendError(t("common.error"));
+      setResendError("Something went wrong. Please try again.");
     } finally {
       setResending(false);
     }
@@ -72,8 +70,8 @@ export default function Login() {
           >
             <Stethoscope size={30} className="text-primary" />
           </div>
-          <h2 className="fw-bold mb-1">{t("login.welcome")}</h2>
-          <p className="text-secondary small mb-0">{t("login.subtitle")}</p>
+          <h2 className="fw-bold mb-1">Welcome Back</h2>
+          <p className="text-secondary small mb-0">Sign in to your TABIBI account</p>
         </div>
 
         {/* Card */}
@@ -81,34 +79,34 @@ export default function Login() {
           <div className="card-body p-4">
 
             {/* Verified success */}
-            {verified && <div className="alert alert-success py-2 small mb-3">{t("login.verified")}</div>}
+            {verified && <div className="alert alert-success py-2 small mb-3">Email verified successfully. You can now sign in.</div>}
 
             {/* Unverified warning */}
             {unverified && (
               <div className="alert alert-warning py-3 small mb-3">
                 <div className="d-flex align-items-center gap-2 mb-2">
                   <MailCheck size={16} className="text-warning" />
-                  <strong>{t("login.unverified_title")}</strong>
+                  <strong>Email not verified</strong>
                 </div>
-                <p className="mb-2">{t("login.unverified_msg")} <strong>{email}</strong></p>
+                <p className="mb-2">Please verify your email before signing in. Check <strong>{email}</strong></p>
                 {resendMsg   && <p className="mb-2 text-success">{resendMsg}</p>}
                 {resendError && <p className="mb-2 text-danger">{resendError}</p>}
                 <button className="btn btn-sm btn-outline-warning d-flex align-items-center gap-1" onClick={handleResend} disabled={resending}>
                   {resending
-                    ? <><span className="spinner-border spinner-border-sm" style={{ width: 12, height: 12 }} /> {t("login.resending")}</>
-                    : <><RefreshCw size={13} /> {t("login.resend")}</>}
+                    ? <><span className="spinner-border spinner-border-sm" style={{ width: 12, height: 12 }} /> Sending...</>
+                    : <><RefreshCw size={13} /> Resend verification email</>}
                 </button>
               </div>
             )}
 
             {/* Password reset success */}
-            {reset && <div className="alert alert-success py-2 small mb-3">{t("login.reset_success")}</div>}
+            {reset && <div className="alert alert-success py-2 small mb-3">Password reset successfully. You can now sign in with your new password.</div>}
 
             <form onSubmit={handleSubmit}>
 
               {/* Email */}
               <div className="mb-3">
-                <label htmlFor="email" className="form-label small fw-semibold">{t("login.email")}</label>
+                <label htmlFor="email" className="form-label small fw-semibold">Email Address</label>
                 <div className="input-group">
                   <span className="input-group-text bg-body-secondary border-end-0"><Mail size={15} className="text-secondary" /></span>
                   <input
@@ -126,8 +124,8 @@ export default function Login() {
               {/* Password */}
               <div className="mb-4">
                 <div className="d-flex justify-content-between align-items-center mb-1">
-                  <label htmlFor="password" className="form-label small fw-semibold mb-0">{t("login.password")}</label>
-                  <Link to="/forgot-password" className="text-primary small text-decoration-none">{t("login.forgot")}</Link>
+                  <label htmlFor="password" className="form-label small fw-semibold mb-0">Password</label>
+                  <Link to="/forgot-password" className="text-primary small text-decoration-none">Forgot password?</Link>
                 </div>
                 <div className="input-group">
                   <span className="input-group-text bg-body-secondary border-end-0"><Lock size={15} className="text-secondary" /></span>
@@ -158,28 +156,28 @@ export default function Login() {
                 disabled={loading}
               >
                 {loading
-                  ? <><span className="spinner-border spinner-border-sm" /> {t("login.signing_in")}</>
-                  : <><LogIn size={16} /> {t("login.sign_in")}</>}
+                  ? <><span className="spinner-border spinner-border-sm" /> Signing in...</>
+                  : <><LogIn size={16} /> Sign In</>}
               </button>
 
             </form>
 
             <div className="d-flex align-items-center gap-2 my-3">
               <hr className="flex-fill m-0" />
-              <span className="text-secondary small px-1">{t("common.or")}</span>
+              <span className="text-secondary small px-1">or</span>
               <hr className="flex-fill m-0" />
             </div>
 
             <p className="text-center text-secondary small mb-0">
-              {t("login.no_account")}{" "}
-              <Link to="/signup" className="text-primary fw-semibold text-decoration-none">{t("login.sign_up")}</Link>
+              Don't have an account?{" "}
+              <Link to="/signup" className="text-primary fw-semibold text-decoration-none">Sign Up</Link>
             </p>
 
           </div>
         </div>
 
         <p className="text-center text-secondary mt-3 mb-0" style={{ fontSize: "0.875rem" }}>
-          &copy; {new Date().getFullYear()} TABIBI. {t("footer.rights")}
+          &copy; {new Date().getFullYear()} TABIBI. All rights reserved.
         </p>
 
       </div>
