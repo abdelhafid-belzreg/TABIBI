@@ -5,6 +5,7 @@ import {
   Filter, X, Clock, Building,
 } from "lucide-react";
 import api from "@/lib/api";
+import { useAuth } from "@/contexts/AuthContext";
 import { Spinner }    from "@/components/ui/spinner";
 import { EmptyState } from "@/components/ui/empty-state";
 
@@ -55,6 +56,9 @@ function FadeIn({ children, delay = 0, direction = "up", className = "" }) {
 }
 
 export default function Doctors() {
+  const { role } = useAuth();
+  const isPatient = role === "patient";
+
   const [doctors,           setDoctors]           = useState([]);
   const [specialties,       setSpecialties]       = useState([]);
   const [cities,            setCities]            = useState([]);
@@ -382,7 +386,7 @@ export default function Doctors() {
                                   <DollarSign size={14} className="me-1" />
                                   {profile?.consultation_fee ?? "N/A"} MAD
                                 </span>
-                                <Link to={`/doctors/${doc.id}`} className="btn btn-outline-primary btn-sm">
+                                <Link to={`${isPatient ? "/patient" : ""}/doctors/${doc.id}`} className="btn btn-outline-primary btn-sm">
                                   View Profile
                                 </Link>
                               </div>

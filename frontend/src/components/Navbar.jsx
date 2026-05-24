@@ -6,7 +6,7 @@ import {
   Stethoscope, Menu, X, LogOut,
   LayoutDashboard, Sun, Moon, ChevronDown, ArrowUp,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function Navbar() {
   const { user, role, logout } = useAuth();
@@ -16,9 +16,16 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropOpen,   setDropOpen]   = useState(false);
   const [showScroll, setShowScroll] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const dashboardPath =
+    role === "doctor" ? "/doctor/dashboard"  :
+    role === "admin"  ? "/admin/dashboard"   :
+                        "/patient/dashboard";
 
   const navLinks = [
     { to: "/",        label: "Home"    },
+    ...(user ? [{ to: dashboardPath, label: "Dashboard" }] : []),
     { to: "/doctors", label: "Doctors" },
     { to: "/about",   label: "About"   },
     { to: "/contact", label: "Contact" },
@@ -30,18 +37,29 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    setDropOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!dropOpen) return;
+    const handleClick = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [dropOpen]);
+
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   const handleSignOut = async () => {
     await logout();
-    navigate("/login");
+    setDropOpen(false);
     setMobileOpen(false);
+    navigate("/login");
   };
-
-  const dashboardPath =
-    role === "doctor" ? "/doctor/dashboard"  :
-    role === "admin"  ? "/admin/dashboard"   :
-                        "/patient/dashboard";
 
   const isActive = (path) =>
     path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
@@ -96,20 +114,20 @@ export default function Navbar() {
               </button>
 
               {user ? (
-                <div className="position-relative">
+                <div className="position-relative" ref={dropdownRef}>
                   <button
-                    className="btn btn-sm btn-outline-primary d-flex align-items-center gap-1"
+                    className={`btn btn-sm d-flex align-items-center gap-1 ${dropOpen ? "btn-primary" : "btn-outline-primary"}`}
                     onClick={() => setDropOpen(!dropOpen)}
                   >
-                    <span className="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center" style={{ width: 22, height: 22, fontSize: "0.7rem", fontWeight: 700 }}>
+                    <span className="rounded-circle bg-white text-primary d-inline-flex align-items-center justify-content-center" style={{ width: 22, height: 22, fontSize: "0.7rem", fontWeight: 700 }}>
                       {user.name?.charAt(0).toUpperCase()}
                     </span>
                     <span className="d-none d-lg-inline">{user.name?.split(" ")[0]}</span>
-                    <ChevronDown size={13} />
+                    <ChevronDown size={13} className={`transition-transform ${dropOpen ? "rotate-180" : ""}`} />
                   </button>
 
                   {dropOpen && (
-                    <div className="position-absolute end-0 mt-1 bg-body border rounded shadow-sm py-1" style={{ minWidth: 185, zIndex: 9999 }} onMouseLeave={() => setDropOpen(false)}>
+                    <div className="position-absolute end-0 mt-2 bg-body border rounded-3 shadow-lg py-2 dropdown-animate" style={{ minWidth: 200, zIndex: 9999 }}>
                       <div className="px-3 py-2 border-bottom">
                         <div className="fw-semibold small">{user.name}</div>
                         <div className="text-secondary" style={{ fontSize: "0.75rem" }}>{user.email}</div>
@@ -120,7 +138,7 @@ export default function Navbar() {
                       <button className="dropdown-item d-flex align-items-center gap-2 small py-2" onClick={() => { navigate(dashboardPath); setDropOpen(false); setMobileOpen(false); }}>
                         <LayoutDashboard size={14} /> Dashboard
                       </button>
-                      <hr className="dropdown-divider my-1" />
+                      <div className="dropdown-divider my-1" />
                       <button className="dropdown-item d-flex align-items-center gap-2 small py-2 text-danger" onClick={handleSignOut}>
                         <LogOut size={14} /> Sign Out
                       </button>

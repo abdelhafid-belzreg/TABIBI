@@ -68,6 +68,8 @@ export default function App() {
             <Route path="book/:doctorId" element={<BookAppointment />} />
             <Route path="appointments" element={<PatientAppointment />} />
             <Route path="profile" element={<PatientProfile />} />
+            <Route path="doctors" element={<Doctors />} />
+            <Route path="doctors/:id" element={<DoctorProfile />} />
           </Route>
 
           {/* Admin */}

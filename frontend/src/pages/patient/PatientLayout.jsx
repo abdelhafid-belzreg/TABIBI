@@ -8,7 +8,7 @@ import { useState } from "react";
 const navItems = [
   { to: "/patient/dashboard",    icon: LayoutDashboard, label: "Dashboard"    },
   { to: "/patient/appointments", icon: Calendar,        label: "Appointments" },
-  { to: "/doctors",              icon: Search,          label: "Find Doctors" },
+  { to: "/patient/doctors",      icon: Search,          label: "Find Doctors" },
   { to: "/patient/profile",      icon: User,            label: "Profile"      },
 ];
 

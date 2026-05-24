@@ -220,7 +220,7 @@ export default function AdminDashboard() {
                   <div className="fw-bold fs-2 text-success">
                     {formatRevenue(reportData?.total_revenue)} <small className="fs-6">MAD</small>
                   </div>
-                  <div className="small text-secondary">Est. Revenue</div>
+                  <div className="small text-secondary">Revenue</div>
                 </div>
               </div>
             </div>

@@ -44,3 +44,26 @@
 [data-bs-theme="dark"] .card-popout:hover {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
 }
+
+/* ── Dropdown Animation ── */
+.dropdown-animate {
+  animation: dropdownFadeIn 0.15s ease;
+}
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Chevron rotation ── */
+.transition-transform {
+  transition: transform 0.2s ease;
+}
+.rotate-180 {
+  transform: rotate(180deg);
+}

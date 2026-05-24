@@ -25,8 +25,7 @@ const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Frida
 
 export default function DoctorProfile() {
   const { id }           = useParams();
-  const { user }         = useAuth();
-  const role             = user?.role;
+  const { user, role }   = useAuth();
   const [doctor, setDoctor]             = useState(null);
   const [availability, setAvailability] = useState([]);
   const [loading, setLoading]           = useState(true);
@@ -76,7 +75,7 @@ export default function DoctorProfile() {
 
         {/* Back */}
         <Link
-          to="/doctors"
+          to={role === "patient" ? "/patient/doctors" : "/doctors"}
           className="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1 mb-3"
         >
           <ChevronLeft size={15} /> Back to Doctors
