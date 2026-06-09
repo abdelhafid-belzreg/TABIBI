@@ -101,7 +101,7 @@ export default function Signup() {
       await api.post("/register", {
         name: fullName, email, phone, cin, password, password_confirmation: confirmPassword, role,
         ...(role === "patient" && { date_of_birth: dateOfBirth }),
-        ...(role === "doctor"  && { clinic_name: clinicName, city, location, specialty_id: specialtyId }),
+        ...(role === "doctor"  && { clinic_name: clinicName, city, location, specialty: specialties.find(s => s.id == specialtyId)?.name || "" }),
       });
       setSent(true);
     } catch (err) {

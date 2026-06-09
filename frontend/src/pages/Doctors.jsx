@@ -69,6 +69,8 @@ export default function Doctors() {
   const [showSidebar,       setShowSidebar]       = useState(false);
   const [loading,           setLoading]           = useState(true);
   const [error,             setError]             = useState("");
+  const [currentPage,       setCurrentPage]       = useState(1);
+  const itemsPerPage = 6;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -114,6 +116,16 @@ export default function Doctors() {
       (d.availabilities ?? []).some((a) => String(a.day_of_week) === selectedDay);
     return matchesSearch && matchesSpecialty && matchesCity && matchesDay;
   });
+
+  const totalPages = Math.ceil(filtered.length / itemsPerPage) || 1;
+  const paginatedDoctors = filtered.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
+  );
+  const goToPage = (page) => setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+
+  // Reset to page 1 whenever filters change
+  useEffect(() => { setCurrentPage(1); }, [search, selectedSpecialty, selectedCity, selectedDay]);
 
   const SidebarContent = () => (
     <div className="d-flex flex-column gap-4">
@@ -280,7 +292,7 @@ export default function Doctors() {
               <FadeIn delay={150}>
                 <div className="d-flex align-items-center justify-content-between mb-3">
                   <p className="text-secondary small mb-0">
-                    Showing <strong>{filtered.length}</strong> {filtered.length === 1 ? "doctor" : "doctors"}
+                    Showing <strong>{paginatedDoctors.length}</strong> of <strong>{filtered.length}</strong> {filtered.length === 1 ? "doctor" : "doctors"}
                     {hasActiveFilters && (
                       <button className="btn btn-link btn-sm text-danger p-0 ms-2" onClick={resetFilters}>
                         Clear filters
@@ -301,8 +313,9 @@ export default function Doctors() {
                   />
                 </FadeIn>
               ) : (
+                <>
                 <div className="row g-4">
-                  {filtered.map((doc, i) => {
+                  {paginatedDoctors.map((doc, i) => {
                     const profile = doc.doctor_profile;
                     return (
                       <div className="col-12 col-md-6 col-lg-4" key={doc.id}>
@@ -398,6 +411,28 @@ export default function Doctors() {
                     );
                   })}
                 </div>
+                {totalPages > 1 && (
+                  <nav className="mt-4 d-flex justify-content-center" aria-label="Doctors pagination">
+                    <ul className="pagination pagination-sm mb-0">
+                      <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                        <button className="page-link" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1}>
+                          Previous
+                        </button>
+                      </li>
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                        <li key={p} className={`page-item ${p === currentPage ? "active" : ""}`}>
+                          <button className="page-link" onClick={() => goToPage(p)}>{p}</button>
+                        </li>
+                      ))}
+                      <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+                        <button className="page-link" onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages}>
+                          Next
+                        </button>
+                      </li>
+                    </ul>
+                  </nav>
+                )}
+                </>
               )}
             </div>
           </div>

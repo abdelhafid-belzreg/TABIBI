@@ -22,6 +22,8 @@ const getPasswordStrength = (password) => {
   return           { label: "Strong", color: "success", icon: ShieldCheck, bars: 4 };
 };
 
+const isValidPhone = (phone) => /^(?:\+212|0)[5-7]\d{8}$/.test(phone.replace(/\s/g, ""));
+
 export default function DoctorProfileEdit() {
   const { user, setUser, logout } = useAuth();
   const navigate                   = useNavigate();
@@ -75,7 +77,7 @@ export default function DoctorProfileEdit() {
         setBio(p.bio                     || "");
         setQualifications(p.qualifications || "");
         setFee(p.consultation_fee        || "");
-        setSpecialtyId(p.specialty_id    || "");
+        setSpecialtyId(specialtiesRes.data.find(s => s.name === p.specialty)?.id || "");
         setClinicName(p.clinic_name      || "");
         setCity(p.city                   || "");
         setLocation(p.location           || "");
@@ -91,12 +93,16 @@ export default function DoctorProfileEdit() {
 
   const handleSave = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setProfileMsg(null);
+    if (phone && !isValidPhone(phone)) {
+      setProfileMsg({ type: "danger", text: "Invalid phone number. Use Moroccan format: 06XXXXXXXX or +212 6XXXXXXXX" });
+      return;
+    }
+    setLoading(true);
     try {
       await api.put("/doctor/profile", {
         full_name: fullName, phone, bio, qualifications,
-        consultation_fee: fee, specialty_id: specialtyId,
+        consultation_fee: fee || null, specialty: specialties.find(s => s.id == specialtyId)?.name || "",
         clinic_name: clinicName, city, location,
       });
       setProfileMsg({ type: "success", text: "Profile updated successfully!" });
@@ -107,7 +113,7 @@ export default function DoctorProfileEdit() {
         type: "danger",
         text: errors
           ? Object.values(errors)[0][0]
-          : err.response?.data?.message || "Failed to update profile.",
+          : err.response?.data?.message || err.message || "Failed to update profile.",
       });
     } finally {
       setLoading(false);
@@ -247,7 +253,7 @@ export default function DoctorProfileEdit() {
                     </label>
                     <input
                       type="tel"
-                      className="form-control"
+                      className={`form-control ${phone ? (isValidPhone(phone) ? "is-valid" : "is-invalid") : ""}`}
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="+212 6 1234 5678"

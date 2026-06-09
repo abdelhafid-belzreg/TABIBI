@@ -17,7 +17,7 @@ export default function Footer() {
 
   const contactItems = [
     { icon: Mail,   value: "contact@tabibi.com",              href: "mailto:contact@tabibi.com" },
-    { icon: Phone,  value: "+212 7 7777 7777",                href: "tel:+212777777777"          },
+    { icon: Phone,  value: "+212 7 6786 4261",                href: "tel:+212767864261"          },
     { icon: MapPin, value: "Salé, Rabat-Salé-Kénitra, Maroc", href: null                         },
   ];
 

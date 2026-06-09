@@ -21,8 +21,10 @@ const getPasswordStrength = (password) => {
   return           { label: "Strong", color: "success", icon: ShieldCheck, bars: 4 };
 };
 
+const isValidPhone = (phone) => /^(?:\+212|0)[5-7]\d{8}$/.test(phone.replace(/\s/g, ""));
+
 export default function PatientProfile() {
-  const { user, logout } = useAuth();
+  const { user, setUser, logout } = useAuth();
   const navigate          = useNavigate();
 
   // ── Profile state ──
@@ -72,14 +74,19 @@ export default function PatientProfile() {
 
   const handleSave = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setProfileMsg(null);
+    if (phone && !isValidPhone(phone)) {
+      setProfileMsg({ type: "danger", text: "Invalid phone number. Use Moroccan format: 06XXXXXXXX or +212 6XXXXXXXX" });
+      return;
+    }
+    setLoading(true);
     try {
       await api.put("/patient/profile", {
         phone,
         date_of_birth: dob,
         medical_notes: medicalNotes,
       });
+      setUser({ ...user, phone });
       setProfileMsg({ type: "success", text: "Profile updated successfully!" });
     } catch (err) {
       const errors = err.response?.data?.errors;
@@ -214,7 +221,7 @@ export default function PatientProfile() {
                     </label>
                     <input
                       type="tel"
-                      className="form-control"
+                      className={`form-control ${phone ? (isValidPhone(phone) ? "is-valid" : "is-invalid") : ""}`}
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="+212 6 1234 5678"

@@ -16,6 +16,7 @@ class DoctorProfile extends Model
         'clinic_name',
         'city',
         'location',
+        'status',
     ];
 
     public function user()

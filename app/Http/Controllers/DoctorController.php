@@ -77,7 +77,7 @@ class DoctorController extends Controller
                 'specialty'        => $request->specialty,
                 'bio'              => $request->bio,
                 'qualifications'   => $request->qualifications,
-                'consultation_fee' => $request->consultation_fee,
+                'consultation_fee' => $request->consultation_fee !== '' ? $request->consultation_fee : null,
                 'clinic_name'      => $request->clinic_name,
                 'city'             => $request->city,
                 'location'         => $request->location,
